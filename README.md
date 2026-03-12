@@ -52,7 +52,7 @@ Clone the repo and load it locally without installing:
 
 ```bash
 git clone https://github.com/Ruelito-Ytac/ytac-designs.git
-claude --plugin-dir ./ytac-designs/plugins/design-toolkit
+claude --plugin-dir ./ytac-designs
 ```
 
 This is useful for testing changes before pushing to GitHub.
@@ -161,33 +161,29 @@ Say "switch to [project name]" to load a different context.
 ## Repository Structure
 
 ```
-ytac-designs/                                    <- Marketplace root
+ytac-designs/
 |
 |-- .claude-plugin/
-|   +-- marketplace.json                         <- Marketplace catalog
+|   |-- marketplace.json                 <- Marketplace catalog
+|   +-- plugin.json                      <- Plugin metadata
 |
-|-- plugins/
-|   +-- design-toolkit/                          <- The plugin
-|       |-- .claude-plugin/
-|       |   +-- plugin.json                      <- Plugin metadata
-|       |
-|       |-- commands/
-|       |   +-- design.md                        <- /design slash command
-|       |
+|-- commands/
+|   +-- design.md                        <- /design slash command
+|
+|-- skills/
+|   +-- design-system-toolkit/
+|       |-- SKILL.md                     <- Entry point (read this first)
+|       |-- agents.md                    <- Orchestrator (discovery, routing, governance)
+|       |-- project/
+|       |   +-- APP_PLAN.md              <- Session state template
 |       +-- skills/
-|           +-- design-system-toolkit/
-|               |-- SKILL.md                     <- Entry point (read this first)
-|               |-- agents.md                    <- Orchestrator (discovery, routing, governance)
-|               |-- project/
-|               |   +-- APP_PLAN.md              <- Session state template
-|               +-- skills/
-|                   |-- 01-mobile-web-ui-ux-design-guide.md
-|                   |-- 02-ux-flow-audit.md
-|                   |-- 03-ui-visual-audit.md
-|                   +-- 04-figma-to-code.md
+|           |-- 01-mobile-web-ui-ux-design-guide.md
+|           |-- 02-ux-flow-audit.md
+|           |-- 03-ui-visual-audit.md
+|           +-- 04-figma-to-code.md
 |
 |-- .gitignore
-+-- README.md                                    <- You are here
++-- README.md                            <- You are here
 ```
 
 ### What Each File Does
@@ -195,15 +191,15 @@ ytac-designs/                                    <- Marketplace root
 | File | Role |
 |------|------|
 | `.claude-plugin/marketplace.json` | Marketplace catalog — lists available plugins for install |
-| `plugins/design-toolkit/.claude-plugin/plugin.json` | Plugin identity — name, version, description |
-| `plugins/design-toolkit/commands/design.md` | The `/design` slash command definition |
-| `plugins/design-toolkit/skills/.../SKILL.md` | Entry point — routes to the correct sub-skill |
-| `plugins/design-toolkit/skills/.../agents.md` | The brain — discovery, routing, governance rules |
-| `plugins/design-toolkit/skills/.../project/APP_PLAN.md` | Template for project session state |
-| `plugins/design-toolkit/skills/.../skills/01-...` | Design reference — 18 sections (typography, color, layout, navigation, forms, accessibility, etc.) |
-| `plugins/design-toolkit/skills/.../skills/02-...` | 7-phase UX flow audit — structure, screen quality, mobile usability, interactions, edge cases |
-| `plugins/design-toolkit/skills/.../skills/03-...` | 11-layer visual audit — spacing, typography, color, components, icons, surfaces, responsive |
-| `plugins/design-toolkit/skills/.../skills/04-...` | Figma production & code export — auto layout, components, styles/variables, design-to-code |
+| `.claude-plugin/plugin.json` | Plugin identity — name, version, description |
+| `commands/design.md` | The `/design` slash command definition |
+| `skills/design-system-toolkit/SKILL.md` | Entry point — routes to the correct sub-skill |
+| `skills/design-system-toolkit/agents.md` | The brain — discovery, routing, governance rules |
+| `skills/design-system-toolkit/project/APP_PLAN.md` | Template for project session state |
+| `skills/design-system-toolkit/skills/01-...` | Design reference — 18 sections (typography, color, layout, navigation, forms, accessibility, etc.) |
+| `skills/design-system-toolkit/skills/02-...` | 7-phase UX flow audit — structure, screen quality, mobile usability, interactions, edge cases |
+| `skills/design-system-toolkit/skills/03-...` | 11-layer visual audit — spacing, typography, color, components, icons, surfaces, responsive |
+| `skills/design-system-toolkit/skills/04-...` | Figma production & code export — auto layout, components, styles/variables, design-to-code |
 
 ---
 
