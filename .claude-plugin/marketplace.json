@@ -1,0 +1,12 @@
+{
+  "name": "ytac-ui-ux-plugins",
+  "description": "Ruel Ytac's UI/UX design toolkit marketplace — plugins for design systems, flow auditing, visual QA, Figma automation, and design-to-code export.",
+  "plugins": [
+    {
+      "name": "ruel-system-design-ui-ux-figma",
+      "description": "Turns Claude into a senior UI/UX design consultant — covering design systems, UX flow auditing, visual QA, Figma automation, and design-to-code export.",
+      "version": "1.0.0",
+      "path": "."
+    }
+  ]
+}

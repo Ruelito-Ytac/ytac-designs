@@ -1,0 +1,9 @@
+{
+  "name": "ruel-system-design-ui-ux-figma",
+  "description": "Claude Code plugin that turns AI into a senior UI/UX design consultant — covering design systems, flow auditing, visual QA, Figma automation, and design-to-code export.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Ruelito Ytac"
+  },
+  "homepage": "https://github.com/your-username/ytac-ui-ux-plugins"
+}
