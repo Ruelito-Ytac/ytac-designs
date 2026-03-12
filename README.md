@@ -20,28 +20,30 @@ Once installed, Claude gains the knowledge of a senior UX/UI consultant. Instead
 
 ## Installation
 
-### From GitHub (Marketplace)
+### Step 1 — Add the marketplace
 
-**Step 1** — Add the marketplace to Claude Code:
+In Claude Code, run:
 
 ```
 /plugin marketplace add Ruelito-Ytac/ytac-designs
 ```
 
-**Step 2** — Install the plugin:
+This registers the `ytac-designs` marketplace so Claude Code can discover the plugin.
+
+### Step 2 — Install the plugin
 
 ```
-/plugin install ruel-system-design-ui-ux-figma
+/plugin install ruel-system-design-ui-ux-figma@ytac-designs
 ```
 
 That's it. The `/design` command and auto-triggering skill are now available.
 
-### Direct Install (No Marketplace)
+### Updating
 
-If you just want to install from the repo directly:
+To pull the latest version after an update:
 
 ```
-/plugin install Ruelito-Ytac/ytac-designs
+/plugin update ruel-system-design-ui-ux-figma@ytac-designs
 ```
 
 ### Local Development / Testing
@@ -50,7 +52,7 @@ Clone the repo and load it locally without installing:
 
 ```bash
 git clone https://github.com/Ruelito-Ytac/ytac-designs.git
-claude --plugin-dir ./ytac-designs
+claude --plugin-dir ./ytac-designs/plugins/design-toolkit
 ```
 
 This is useful for testing changes before pushing to GitHub.
@@ -120,7 +122,7 @@ When you say "start a new design project" (or use `/design` to start one), Claud
 
 1. **23-question discovery** covering project identity, platform, branding, design system setup, typography, navigation, and special requirements
 2. **Generates `APP_PLAN.md`** — a living document with your project context in YAML
-3. **Derives 3–5 design principles** from your answers (e.g. "Clarity over cleverness", "Mobile-first always")
+3. **Derives 3-5 design principles** from your answers (e.g. "Clarity over cleverness", "Mobile-first always")
 4. **Routes to the right sub-skill** based on what you want to do first
 
 You don't need to answer all 23 questions — Claude skips anything it already knows from your conversation.
@@ -132,7 +134,7 @@ You don't need to answer all 23 questions — Claude skips anything it already k
 This is the file that makes the toolkit useful across sessions. Claude creates it during discovery and updates it as you work. It tracks:
 
 - **Project Context** — YAML block with platform, colors, fonts, spacing density, etc.
-- **Design Principles** — 3–5 values that guide trade-off decisions
+- **Design Principles** — 3-5 values that guide trade-off decisions
 - **Current Focus** — What's actively being worked on, blockers
 - **Decision Log** — What was decided, why, and when (prevents re-debating)
 - **Completed Work** — Screens designed, flows audited, components created
@@ -147,57 +149,61 @@ You can also edit `APP_PLAN.md` directly — it's just Markdown with a YAML bloc
 Each project gets its own APP_PLAN file:
 
 ```
-APP_PLAN.md              ← Default / primary project
-APP_PLAN_ADMIN.md        ← Admin dashboard project
-APP_PLAN_MARKETING.md    ← Marketing site project
+APP_PLAN.md              <- Default / primary project
+APP_PLAN_ADMIN.md        <- Admin dashboard project
+APP_PLAN_MARKETING.md    <- Marketing site project
 ```
 
 Say "switch to [project name]" to load a different context.
 
 ---
 
-## Plugin Structure
+## Repository Structure
 
 ```
-ytac-ui-ux-plugins/
-│
-├── .claude-plugin/
-│   ├── plugin.json              ← Plugin metadata
-│   └── marketplace.json         ← Marketplace catalog
-│
-├── commands/
-│   └── design.md                ← /design slash command
-│
-├── skills/
-│   └── design-system-toolkit/
-│       ├── SKILL.md             ← Entry point (Claude reads this first)
-│       ├── agents.md            ← Orchestrator (discovery, routing, governance)
-│       ├── project/
-│       │   └── APP_PLAN.md      ← Session state template
-│       └── skills/
-│           ├── 01-mobile-web-ui-ux-design-guide.md
-│           ├── 02-ux-flow-audit.md
-│           ├── 03-ui-visual-audit.md
-│           └── 04-figma-to-code.md
-│
-├── .gitignore
-└── README.md                    ← You are here
+ytac-designs/                                    <- Marketplace root
+|
+|-- .claude-plugin/
+|   +-- marketplace.json                         <- Marketplace catalog
+|
+|-- plugins/
+|   +-- design-toolkit/                          <- The plugin
+|       |-- .claude-plugin/
+|       |   +-- plugin.json                      <- Plugin metadata
+|       |
+|       |-- commands/
+|       |   +-- design.md                        <- /design slash command
+|       |
+|       +-- skills/
+|           +-- design-system-toolkit/
+|               |-- SKILL.md                     <- Entry point (read this first)
+|               |-- agents.md                    <- Orchestrator (discovery, routing, governance)
+|               |-- project/
+|               |   +-- APP_PLAN.md              <- Session state template
+|               +-- skills/
+|                   |-- 01-mobile-web-ui-ux-design-guide.md
+|                   |-- 02-ux-flow-audit.md
+|                   |-- 03-ui-visual-audit.md
+|                   +-- 04-figma-to-code.md
+|
+|-- .gitignore
++-- README.md                                    <- You are here
 ```
 
 ### What Each File Does
 
 | File | Role |
 |------|------|
-| **`.claude-plugin/plugin.json`** | Plugin identity — name, version, author |
-| **`.claude-plugin/marketplace.json`** | Marketplace catalog for named installs |
-| **`commands/design.md`** | The `/design` slash command definition |
-| **`skills/.../SKILL.md`** | Entry point — routes to the correct sub-skill |
-| **`skills/.../agents.md`** | The brain — discovery, routing, governance rules |
-| **`skills/.../project/APP_PLAN.md`** | Template for project session state |
-| **`skills/.../skills/01-...`** | Design reference — typography, color, layout, navigation, forms, accessibility, handoff, performance budgets (18 sections) |
-| **`skills/.../skills/02-...`** | 7-phase UX flow audit — structure, screen quality, mobile usability, interactions, edge cases, accessibility, cognitive load |
-| **`skills/.../skills/03-...`** | 11-layer visual audit — spacing, typography, color, components, icons, surfaces, responsive, modern patterns, dark mode, motion, system compliance |
-| **`skills/.../skills/04-...`** | Figma production & code export — auto layout, components, styles/variables, file repair, and design-to-code for React, Vue, HTML/CSS, Tailwind |
+| `.claude-plugin/marketplace.json` | Marketplace catalog — lists available plugins for install |
+| `plugins/design-toolkit/.claude-plugin/plugin.json` | Plugin identity — name, version, description |
+| `plugins/design-toolkit/commands/design.md` | The `/design` slash command definition |
+| `plugins/design-toolkit/skills/.../SKILL.md` | Entry point — routes to the correct sub-skill |
+| `plugins/design-toolkit/skills/.../agents.md` | The brain — discovery, routing, governance rules |
+| `plugins/design-toolkit/skills/.../project/APP_PLAN.md` | Template for project session state |
+| `plugins/design-toolkit/skills/.../skills/01-...` | Design reference — 18 sections (typography, color, layout, navigation, forms, accessibility, etc.) |
+| `plugins/design-toolkit/skills/.../skills/02-...` | 7-phase UX flow audit — structure, screen quality, mobile usability, interactions, edge cases |
+| `plugins/design-toolkit/skills/.../skills/03-...` | 11-layer visual audit — spacing, typography, color, components, icons, surfaces, responsive |
+| `plugins/design-toolkit/skills/.../skills/04-...` | Figma production & code export — auto layout, components, styles/variables, design-to-code |
 
 ---
 
@@ -209,7 +215,7 @@ ytac-ui-ux-plugins/
 
 ### 02 — UX Flow Audit
 
-7-phase validation framework: flow structure, screen-by-screen review, mobile usability, interaction & feedback, edge cases, accessibility, and cognitive load. Includes Nielsen's heuristics mapping (H1–H10), severity system, fix framework with effort estimates, competitive benchmarks, and user research integration.
+7-phase validation framework: flow structure, screen-by-screen review, mobile usability, interaction & feedback, edge cases, accessibility, and cognitive load. Includes Nielsen's heuristics mapping (H1-H10), severity system, fix framework with effort estimates, competitive benchmarks, and user research integration.
 
 ### 03 — Visual Audit
 
@@ -226,8 +232,8 @@ Figma mastery: auto layout, component construction, variant & property architect
 The toolkit includes design system governance in `agents.md`:
 
 - **Ownership model** — System Owner, Contributors, Consumers, Reviewers
-- **Contribution workflow** — Identify → Propose → Review → Integrate
-- **Component lifecycle** — Proposed → Draft → Beta → Stable → Deprecated
+- **Contribution workflow** — Identify -> Propose -> Review -> Integrate
+- **Component lifecycle** — Proposed -> Draft -> Beta -> Stable -> Deprecated
 - **Deprecation process** — 5-step process with 30-day minimum notice
 - **Audit schedule** — Weekly, monthly, quarterly, annual review cadence
 - **Semantic versioning** — MAJOR.MINOR.PATCH adapted for design systems
@@ -247,13 +253,19 @@ The toolkit includes design system governance in `agents.md`:
 To disable the plugin without removing it:
 
 ```
-/plugin disable ruel-system-design-ui-ux-figma
+/plugin disable ruel-system-design-ui-ux-figma@ytac-designs
 ```
 
 To fully remove:
 
 ```
-/plugin uninstall ruel-system-design-ui-ux-figma
+/plugin uninstall ruel-system-design-ui-ux-figma@ytac-designs
+```
+
+To remove the marketplace entirely:
+
+```
+/plugin marketplace remove ytac-designs
 ```
 
 ---
