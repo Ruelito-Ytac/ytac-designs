@@ -268,6 +268,7 @@ Token Collections:
 - [ ] All semantic color tokens exist in Figma
 - [ ] Border radius FLOAT variables exist in Figma
 - [ ] Icon set imported as components (no text-character icons)
+- [ ] `icon_page_name` is set in APP_PLAN.md — if NOT set, ASK: "Which Figma page contains your project's icons?" and store the answer before proceeding
 - [ ] APP_PLAN.md inventory is updated
 
 **When designing screens after this step:**

@@ -362,6 +362,13 @@ These checks catch the second most common spacing bug: wrong sizing mode causing
 | 5.14 | On map screens, do markers/icons cluster within 40px without a grouping indicator? (🟠 Major — use cluster indicators) | | |
 | 5.15 | Do compact cards display 4+ data points? (🟠 Major — max 3 data points per compact card, hide rest in detail view) | | |
 
+### Circular / Square Element Check
+
+| # | Check | Pass/Fail | Notes |
+|---|-------|-----------|-------|
+| 5.16 | Do ALL circular elements (radius ≥ 9999) have equal width and height? An oval is always a bug. | | |
+| 5.17 | Are ALL frames intended to be square (avatars, icon containers, dots, badges) set to FIXED on both axes — never HUG? | | |
+
 ### Icon & Image Defect Catalog
 
 | Defect | Visual Symptom | Fix |
@@ -369,9 +376,13 @@ These checks catch the second most common spacing bug: wrong sizing mode causing
 | Mixed icon sets | Some icons are Phosphor, some Material, some custom | Standardize to one library (or a defined subset) |
 | Mixed fill/outline | Tabs use filled icons for active but nav uses outlined for active | Define a rule: e.g., filled = active, outlined = inactive — apply everywhere |
 | Icon size inconsistency | Search icon is 20px, settings icon is 24px, both in the same nav bar | Use the same size within the same context |
+| **Non-square circular element** | A frame with radius-full looks like an oval — width ≠ height | Set FIXED W = H on both axes. Never use HUG on circular/square elements. |
 | Blurry images | Avatar or product image looks soft/pixelated | Replace with @2x resolution image or use vector/SVG |
 | No image fallback | Broken image shows the browser broken-image icon | Design a gray placeholder with a subtle icon |
 | Inconsistent avatar shape | Some avatars are circles, some are rounded squares | Pick one shape and apply to all avatars |
+| **Truncated text label** | A label shows "Date Of Bi..." instead of "Date of Birth" — text is clipping | Set text to fill width. Ensure parent has enough space. Labels must never truncate. |
+| **Missing progress indicators** | Multi-step flow has no dots, step bar, or progress — user doesn't know their position | Add pagination dots or step indicator. Any flow with 2+ screens needs one. |
+| **Inconsistent navigation** | Back buttons differ across screens in the same flow (text vs icon, left vs center) | Pick one back navigation pattern and apply to every screen in the flow. |
 
 ---
 

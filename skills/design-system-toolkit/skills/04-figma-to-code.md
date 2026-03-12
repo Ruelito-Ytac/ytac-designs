@@ -58,6 +58,10 @@ Every Figma file built or touched by this skill MUST follow these rules. No exce
 5. **Nest Intentionally** — Maximum 6 levels of nesting. Deeper = extract to component.
 6. **No Spacer Frames** — Never use empty frames (`_sp`, `Spacer`, etc.) between siblings for spacing. Always use auto layout `gap` (`itemSpacing`) on the parent. If children need different gaps, group related items into sub-frames.
 7. **No Placeholder Heights** — Every element's height must match its content (HUG). Only screen frames, images, icons, avatars, and dividers get fixed heights. An input field at 100px with 48px of content is a bug.
+8. **Equal Width × Height on Circular/Square Elements** — Any frame intended to be circular or square MUST have `width = height`. Use `FIXED` on BOTH axes. Never `HUG`. This applies to ALL such elements: avatars, icon containers, dots, badges, input cells meant to be square, stat containers, any frame with `cornerRadius ≥ 9999`. A 40×19 "circle" is a bug. See build pattern below.
+9. **No Truncated Labels** — Every text label must be fully visible. Use `fill width` on text inside auto layout. If a label shows "Date Of Bi..." instead of "Date of Birth", the text sizing is broken. Labels must never clip.
+10. **Multi-Step Flows Need Progress Indicators** — Any flow with 2+ sequential screens (carousels, wizards, onboarding) MUST show the user's position (pagination dots, step bar, progress indicator). Missing indicators = the user is lost.
+11. **Consistent Navigation Across a Flow** — Back buttons, headers, and navigation elements must use the same pattern on every screen within a flow. If screen A uses "← Back" text, screen B cannot use just "←". Pick one pattern and apply it everywhere.
 
 ### Pre-Flight Check
 
@@ -71,9 +75,10 @@ Before building anything in Figma, verify the project has:
 [ ] Icon set chosen and imported as components (Lucide, Phosphor, Material Symbols, etc.)
 [ ] Icon sizing scale confirmed (12/16/20/24/32/40/48)
 [ ] All icon frames are square (width = height), auto layout center-center
+[ ] icon_page_name is set in APP_PLAN.md — if NOT set, ASK the user NOW: "Which Figma page contains your project's icons? (e.g., 'UI Icons', 'Assets/Icons')" and store in APP_PLAN.md before proceeding
 
 Missing any of these? → Run governance.md Step 3 first.
-See 01-guide §20 (Iconography) and §21 (Border Radius) for full rules.
+⚠️ If icon_page_name is not set, you MUST ask the user before building any screen. Do not skip this.
 ```
 
 ### Tool Selection Guide
@@ -100,13 +105,54 @@ See 01-guide §20 (Iconography) and §21 (Border Radius) for full rules.
 
 ### Icon Page Integration
 
-When building screens that include icons:
+**⚠️ Before building any screen with icons, `icon_page_name` MUST be set in APP_PLAN.md. If it's not set, STOP and ask the user before proceeding.**
+
 1. Read `icon_page_name` from `project/APP_PLAN.md`
-2. If set, use `get_design_context` to fetch available icons from that page
-3. Match needed icons to available icons by name/purpose
-4. Use the project's actual icon components — never substitute generic/emoji icons
-5. If an icon doesn't exist, flag it as missing and suggest adding it
-6. If `icon_page_name` is not set, ask the user which page contains their icons
+2. **If NOT set → STOP. Ask the user:** "Which Figma page contains your project's icons? (e.g., 'UI Icons', 'Assets/Icons')" — Store in APP_PLAN.md, then continue.
+3. Use `get_design_context` to fetch available icons from that page
+4. Match needed icons to available icons by name/purpose
+5. Use the project's actual icon components — never substitute generic/emoji icons
+6. If a specific icon doesn't exist on the page, flag it as missing and suggest adding it
+
+### Building Circular / Square Elements (Golden Rule 8)
+
+Any frame that should appear as a circle or square MUST have `width = height`. This applies universally — not just to icons.
+
+```javascript
+// Via figma_execute — the ONLY correct way to create any circular/square element
+const el = figma.createFrame();
+const SIZE = 40; // pick the appropriate size
+
+// ⚠️ width and height MUST be identical
+el.resize(SIZE, SIZE);
+
+// Auto layout for centering children
+el.layoutMode = "VERTICAL";
+el.primaryAxisAlignItems = "CENTER";
+el.counterAxisAlignItems = "CENTER";
+
+// ⚠️ BOTH axes MUST be FIXED — never HUG on circular/square elements
+el.layoutSizingHorizontal = "FIXED";
+el.layoutSizingVertical = "FIXED";
+
+// Circle = 9999, Rounded square = 8
+el.cornerRadius = 9999;
+```
+
+**Why this breaks:** Setting `layoutSizingVertical = "HUG"` or `layoutSizingHorizontal = "HUG"` on a frame with children causes the frame to resize to its content. A 40×40 circle becomes 40×19 (oval) when the child is shorter than the container. Text children are especially dangerous — they make height vary with font size.
+
+**The rules:**
+1. Always `.resize(SIZE, SIZE)` with identical W and H values
+2. Always set BOTH `layoutSizingHorizontal` and `layoutSizingVertical` to `"FIXED"`
+3. Never use `HUG` on any frame that should be circular or square
+4. Center children via auto layout alignment — never by changing the container dimensions
+5. If you need text next to a circular element, put the text OUTSIDE in a wrapper frame — never inside the circle
+
+**Anti-patterns:**
+- ❌ `el.resize(40, 24)` — non-square
+- ❌ `layoutSizingVertical = "HUG"` on a circle — collapses height
+- ❌ Setting only width OR only height — the other stays at default
+- ❌ Adding text as a child of a circular frame — text height varies, breaks the square
 
 ---
 
@@ -189,17 +235,22 @@ STEP 5: Verify
 For every frame/element, ask:
 
 ```
+Is this element meant to be circular or square (W must equal H)?
+├─ YES → BOTH layoutSizingHorizontal AND layoutSizingVertical = "FIXED"
+│   → resize(SIZE, SIZE) — width MUST equal height. Never HUG.
+│   → See "Building Circular / Square Elements" section above.
+│
 Should this element stretch to fill its parent?
 ├─ YES → layoutSizingHorizontal = "FILL" (or vertical)
 │   Examples: buttons in a card, text in a row, content area height
 │
 ├─ NO, it should be exactly its content size
 │  → layoutSizingHorizontal = "HUG"
-│   Examples: tags, badges, icons, headers, footers
+│   Examples: tags, badges, headers, footers
 │
 └─ NO, it needs a specific pixel size
    → layoutSizingHorizontal = "FIXED" + set explicit width
-    Examples: avatars (40×40), screen width (393px), dividers (1px height)
+    Examples: screen width (393px), dividers (1px height)
 ```
 
 ### Common Patterns Built with Auto Layout

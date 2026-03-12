@@ -1401,10 +1401,16 @@ STRUCTURE:
 SIZING:
 - [ ] No child has fixed width inside a fill-width parent (should be fill)
 - [ ] Text layers are fill width (not fixed width with hardcoded values)
+- [ ] **No truncated labels** — every label, placeholder, and heading must be fully visible. If text clips (e.g., "Date Of Bi..."), the text layer needs fill width or the parent needs more space
 - [ ] Icons/avatars are fixed size (the only things that should be fixed)
+- [ ] **All circular/square elements have W = H** — any frame with `cornerRadius ≥ 9999` or intended to be square must have identical width and height, FIXED on both axes, never HUG
 - [ ] No element is wider than its parent (causes overflow)
 - [ ] **No placeholder heights** — inputs, buttons, cards, list items must be HUG height, not stuck at a default (e.g., 100px)
 - [ ] Only screen frames, images, icons, avatars, dividers, and status bar spacers should have fixed height
+
+FLOW CONSISTENCY:
+- [ ] **Multi-step flows have progress indicators** — any flow with 2+ sequential screens must show position (dots, step bar, progress)
+- [ ] **Navigation is consistent across the flow** — back buttons, headers, and nav elements use the same pattern on every screen (don't mix "← Back" text with bare "←" arrows)
 
 SPACING:
 - [ ] All gaps use spacing tokens (4/8/12/16/24/32) — no arbitrary values
@@ -2047,11 +2053,11 @@ Icon Container / [Name] (COMPONENT, 40×40 fixed, auto layout center-center, fil
 5. All icons are Figma components, organized under `Icon / [Name]`
 6. Never use text characters ("★") as icons — always use vector paths
 
-### Detection Script — Find Broken Icons
+### Detection Script — Find Broken Icons & Non-Square Circular Elements
 
 ```javascript
-// Via figma_execute — detect icon anti-patterns
-function auditIcons(node, results = { textIcons: [], nonSquare: [], wrongSize: [], noComponent: [] }) {
+// Via figma_execute — detect icon anti-patterns AND any non-square circular/square element
+function auditIcons(node, results = { textIcons: [], nonSquare: [], wrongSize: [] }) {
   // Text characters used as icons (common anti-pattern)
   if (node.type === 'TEXT' && node.characters && node.characters.length <= 2) {
     const char = node.characters;
@@ -2063,17 +2069,28 @@ function auditIcons(node, results = { textIcons: [], nonSquare: [], wrongSize: [
       });
     }
   }
-  // Non-square icon containers
-  if (node.type === 'FRAME' && node.name.toLowerCase().includes('icon')) {
+  if (node.type === 'FRAME' || node.type === 'COMPONENT' || node.type === 'INSTANCE') {
     const w = Math.round(node.width);
     const h = Math.round(node.height);
-    if (w !== h && w <= 64 && h <= 64) {
-      results.nonSquare.push({ id: node.id, name: node.name, w: w, h: h, parent: node.parent?.name });
+    // Catch ANY frame with cornerRadius >= 9999 (full circle) that has W ≠ H
+    const isFullCircle = typeof node.cornerRadius === 'number' && node.cornerRadius >= 9999;
+    // Also catch frames with names suggesting they should be square
+    const nameLower = (node.name || '').toLowerCase();
+    const shouldBeSquare = /icon|avatar|dot|badge|indicator|circle|fab|profile/.test(nameLower);
+
+    if ((isFullCircle || shouldBeSquare) && w !== h && w <= 120 && h <= 120) {
+      results.nonSquare.push({
+        id: node.id, name: node.name, w: w, h: h,
+        parent: node.parent?.name,
+        reason: isFullCircle ? 'radius-full but W≠H (oval)' : 'name suggests square but W≠H'
+      });
     }
-    // Not on the sizing scale
-    const validSizes = [12, 16, 20, 24, 32, 40, 48, 56, 64];
-    if (!validSizes.includes(w) || !validSizes.includes(h)) {
-      results.wrongSize.push({ id: node.id, name: node.name, w: w, h: h, parent: node.parent?.name });
+    // Off-scale sizing for small elements that should be square
+    if (shouldBeSquare && w <= 64) {
+      const validSizes = [8, 10, 12, 16, 20, 24, 32, 40, 44, 48, 56, 64];
+      if (!validSizes.includes(w) || !validSizes.includes(h)) {
+        results.wrongSize.push({ id: node.id, name: node.name, w: w, h: h, parent: node.parent?.name });
+      }
     }
   }
   if ('children' in node) {
@@ -2664,8 +2681,9 @@ The wrong sizing mode is why UI breaks when content changes. These rules are non
 |---|---|---|
 | Screen frame | Width (device) + Height (device) | Matches the device viewport exactly |
 | Images / Thumbnails | Width + Height | Aspect ratio must be preserved. Use `fill` or `fit`. |
-| Icons | Width + Height | Always square, always on the icon scale (24×24, etc.) |
-| Avatars | Width + Height | Always square or circular, fixed size (32/40/48/56px) |
+| Icons | Width + Height | Always square (W = H), always on the icon scale (24×24, etc.) |
+| Avatars | Width + Height | Always square (W = H), circular, fixed size (32/40/48/56px) |
+| Any circular/square element | Width + Height | W MUST equal H. Applies to ALL frames with `cornerRadius ≥ 9999` or intended to be square: containers, dots, badges, etc. FIXED both axes, never HUG. |
 | Dividers / Separators | Height (1px or 2px) | Width fills parent. Height is always 1px. |
 | Progress bars | Height | Fixed track height (4–8px). Width fills parent. |
 | Input fields | Height only (48px standard) | Width FILLS parent. Height is standardized across the app. |

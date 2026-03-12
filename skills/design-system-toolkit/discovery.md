@@ -6,6 +6,20 @@
 
 ---
 
+## ⚠️ CRITICAL: One Question Per Message — STOP and WAIT
+
+**You MUST ask exactly ONE question per message, then STOP and WAIT for the user's response before asking the next question.**
+
+- Do NOT list multiple questions in a single message
+- Do NOT preview upcoming questions
+- Do NOT say "I'll ask you 6 questions" and then list them
+- After asking a question, your message ENDS. Period. No "next I'll ask about..."
+- Wait for the user's reply, then ask the NEXT question in a NEW message
+
+**If you combine questions, you are violating this rule. One question. One message. Wait.**
+
+---
+
 ## How Discovery Works
 
 1. Check if `project/APP_PLAN.md` exists
@@ -31,6 +45,8 @@ Ask:
 
 Store: `project.name` and `project.description`
 
+**⏸️ STOP. Send this question only. Wait for the user's response before continuing.**
+
 ---
 
 ### Question 2: Platform
@@ -52,6 +68,8 @@ If they choose A, follow up (still one at a time):
 
 Store: `platform.type` and `platform.mobile_priority`
 
+**⏸️ STOP. Send this question only. Wait for the user's response before continuing.**
+
 ---
 
 ### Question 3: Target Audience
@@ -60,6 +78,8 @@ Ask:
 > "Who is the target audience? (e.g., 'young professionals 25-35', 'small business owners', 'gamers')"
 
 Store: `project.audience`
+
+**⏸️ STOP. Send this question only. Wait for the user's response before continuing.**
 
 ---
 
@@ -80,6 +100,8 @@ Ask:
 
 Store: `branding.primary_color`, `branding.secondary_color`, `branding.visual_tone`
 
+**⏸️ STOP. Send this question only. Wait for the user's response before continuing.**
+
 ---
 
 ### Question 5: Navigation Pattern
@@ -95,6 +117,8 @@ Ask:
 
 Store: `navigation.section_count`, `navigation.mobile_pattern`, `navigation.desktop_pattern`
 
+**⏸️ STOP. Send this question only. Wait for the user's response before continuing.**
+
 ---
 
 ### Question 6: Priority Flows/Screens
@@ -103,6 +127,8 @@ Ask:
 > "What are the first 2-3 screens or flows you want to focus on? (e.g., 'onboarding flow', 'home screen', 'checkout')"
 
 Store: `requirements.priority_flows`
+
+**⏸️ STOP. All 6 core questions complete — proceed to generate APP_PLAN.md.**
 
 ---
 
