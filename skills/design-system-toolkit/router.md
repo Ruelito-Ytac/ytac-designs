@@ -39,8 +39,8 @@ Classify the user's intent from `$ARGUMENTS` using keyword matching. Route to th
 | "audit UI", "audit visual", "check design", "visual audit", "look modern", "check screens" | Load `skills/03-ui-visual-audit.md` |
 | "full audit", "review everything", "audit all", "complete review", "full design audit" | Load `skills/02-ux-flow-audit.md` THEN `skills/03-ui-visual-audit.md` |
 | "audit auto layout", "audit autolayout", "check layout", "layout audit" | Load `skills/05-figma-autolayout-audit.md` |
-| "design screen", "create screen", "new screen", "design the", "build screen" | Load `skills/01-mobile-web-ui-ux-design-guide.md` |
-| "build in Figma", "create in Figma", "add auto layout", "build screen", "create screen" | Load `skills/04a-figma-build-core.md` |
+| "design screen", "new screen", "design the", "design a", "plan screen", "screen design" | Load `skills/01-design-guide.md` (+ `skills/01-ref-design-patterns.md` if review/reference needed) |
+| "build in Figma", "create in Figma", "build screen", "create screen", "add auto layout", "construct" | Load `skills/04a-figma-build-core.md` |
 | "build component", "create component", "make reusable", "add variants", "component set" | Load `skills/04b-component-architect.md` |
 | "fix Figma", "repair", "clean up", "audit file", "find issues" | Load `skills/04d-figma-repair.md` |
 | "export", "convert to code", "to React", "to HTML", "generate code", "to CSS", "to Tailwind" | Load `skills/04c-code-export.md` |

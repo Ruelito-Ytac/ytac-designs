@@ -9,7 +9,7 @@ description: >
   for design quality feedback. This skill runs a structured visual inspection across spacing, typography, color,
   components, alignment, responsiveness, and modern design patterns — then provides actionable fixes.
 
-  IMPORTANT: Read project/APP_PLAN.md for project context and skills/01-mobile-web-ui-ux-design-guide.md for the design system principles
+  IMPORTANT: Read project/APP_PLAN.md for project context and skills/01-design-guide.md for the design system principles
   this audit references. If unavailable, the audit criteria below are self-contained.
 ---
 

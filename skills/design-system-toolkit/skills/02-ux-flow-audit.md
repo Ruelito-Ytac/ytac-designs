@@ -9,7 +9,7 @@ description: >
   before handoff. This skill runs a structured pass/fail audit, identifies friction points, and suggests
   concrete fixes grounded in the modern-ui-ux-design skill principles.
   
-  IMPORTANT: Read project/APP_PLAN.md for project context and skills/01-mobile-web-ui-ux-design-guide.md for the design principles
+  IMPORTANT: Read project/APP_PLAN.md for project context and skills/01-design-guide.md for the design principles
   this audit references. If unavailable, the audit criteria below are self-contained.
 ---
 

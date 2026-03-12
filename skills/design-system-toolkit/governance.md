@@ -88,9 +88,45 @@ Typography / Helper            → [Font], 12px, Regular, line-height: 16px
 
 **How to create in Figma (using Figma MCP tools):**
 
-1. Use `figma_execute` with `figma.createTextStyle()` to create each text style programmatically. See 04-figma-to-code.md → "Creating Text Styles via figma_execute" for the complete ready-to-run script that creates all 18 styles.
-2. Replace `"Inter"` in the script with the project's actual brand font from APP_PLAN.md.
-3. After creation, verify all 18 styles appear in Figma's local styles panel.
+Use `figma_execute` with the following script to create all 18 styles programmatically:
+
+```javascript
+// Via figma_execute — create all text styles
+async function createTextStyle(name, fontFamily, fontSize, fontWeight, lineHeight, letterSpacing) {
+  const style = figma.createTextStyle();
+  style.name = name;
+  await figma.loadFontAsync({ family: fontFamily, style: fontWeight });
+  style.fontName = { family: fontFamily, style: fontWeight };
+  style.fontSize = fontSize;
+  style.lineHeight = { value: lineHeight, unit: "PIXELS" };
+  if (letterSpacing) {
+    style.letterSpacing = { value: letterSpacing, unit: "PIXELS" };
+  }
+  return style;
+}
+
+// ⚠️ Replace "Inter" with the project's actual brand font from APP_PLAN.md
+await createTextStyle("Typography / Display", "Inter", 48, "Bold", 56, -0.5);
+await createTextStyle("Typography / H1", "Inter", 32, "Bold", 40, -0.25);
+await createTextStyle("Typography / H2", "Inter", 24, "SemiBold", 32, 0);
+await createTextStyle("Typography / H3", "Inter", 20, "SemiBold", 28, 0);
+await createTextStyle("Typography / H4", "Inter", 18, "Medium", 24, 0);
+await createTextStyle("Typography / Body Large", "Inter", 18, "Regular", 28, 0);
+await createTextStyle("Typography / Body", "Inter", 16, "Regular", 24, 0);
+await createTextStyle("Typography / Body Bold", "Inter", 16, "SemiBold", 24, 0);
+await createTextStyle("Typography / Body Small", "Inter", 14, "Regular", 20, 0);
+await createTextStyle("Typography / Body Small Bold", "Inter", 14, "SemiBold", 20, 0);
+await createTextStyle("Typography / Caption", "Inter", 12, "Regular", 16, 0);
+await createTextStyle("Typography / Caption Bold", "Inter", 12, "Medium", 16, 0);
+await createTextStyle("Typography / Overline", "Inter", 11, "Medium", 16, 0.5);
+await createTextStyle("Typography / Button Large", "Inter", 16, "SemiBold", 24, 0);
+await createTextStyle("Typography / Button", "Inter", 14, "SemiBold", 20, 0);
+await createTextStyle("Typography / Button Small", "Inter", 12, "Medium", 16, 0);
+await createTextStyle("Typography / Label", "Inter", 14, "Medium", 20, 0);
+await createTextStyle("Typography / Helper", "Inter", 12, "Regular", 16, 0);
+```
+
+After creation, verify all 18 styles appear in Figma's local styles panel.
 
 ### 3B: Generate the Color System
 
@@ -224,18 +260,248 @@ SEMANTIC TOKENS (what you actually apply to designs):
 **How to implement in Figma:**
 
 Option A — **Figma Variables** (preferred, supports mode switching):
-1. Create "Primitives" collection: Use `figma_setup_design_tokens` with all palette colors from the table above. See 04-figma-to-code.md → "Creating Color Variables via MCP → Step 1" for the complete ready-to-run call.
-2. Create "Semantic" collection with Light and Dark modes: Use `figma_setup_design_tokens` with all semantic tokens mapped to primitive values. See 04-figma-to-code.md → "Step 2" for the complete ready-to-run call with ~35 tokens.
-3. This allows instant Light ↔ Dark theme switching in Figma by changing the variable mode on any frame.
+
+**Step 1: Create the Primitives collection**
+
+```
+Tool: figma_setup_design_tokens
+Parameters:
+  collectionName: "Primitives"
+  modes: ["Value"]
+  tokens: [
+    { name: "Primary/50",  resolvedType: "COLOR", values: { "Value": "#EFF6FF" } },
+    { name: "Primary/100", resolvedType: "COLOR", values: { "Value": "#DBEAFE" } },
+    { name: "Primary/200", resolvedType: "COLOR", values: { "Value": "#BFDBFE" } },
+    { name: "Primary/300", resolvedType: "COLOR", values: { "Value": "#93C5FD" } },
+    { name: "Primary/400", resolvedType: "COLOR", values: { "Value": "#60A5FA" } },
+    { name: "Primary/500", resolvedType: "COLOR", values: { "Value": "#3B82F6" } },
+    { name: "Primary/600", resolvedType: "COLOR", values: { "Value": "#2563EB" } },
+    { name: "Primary/700", resolvedType: "COLOR", values: { "Value": "#1D4ED8" } },
+    { name: "Primary/800", resolvedType: "COLOR", values: { "Value": "#1E40AF" } },
+    { name: "Primary/900", resolvedType: "COLOR", values: { "Value": "#1E3A8A" } },
+    { name: "Primary/950", resolvedType: "COLOR", values: { "Value": "#172554" } },
+
+    { name: "Neutral/0",    resolvedType: "COLOR", values: { "Value": "#FFFFFF" } },
+    { name: "Neutral/50",   resolvedType: "COLOR", values: { "Value": "#F9FAFB" } },
+    { name: "Neutral/100",  resolvedType: "COLOR", values: { "Value": "#F3F4F6" } },
+    { name: "Neutral/200",  resolvedType: "COLOR", values: { "Value": "#E5E7EB" } },
+    { name: "Neutral/300",  resolvedType: "COLOR", values: { "Value": "#D1D5DB" } },
+    { name: "Neutral/400",  resolvedType: "COLOR", values: { "Value": "#9CA3AF" } },
+    { name: "Neutral/500",  resolvedType: "COLOR", values: { "Value": "#6B7280" } },
+    { name: "Neutral/600",  resolvedType: "COLOR", values: { "Value": "#4B5563" } },
+    { name: "Neutral/700",  resolvedType: "COLOR", values: { "Value": "#374151" } },
+    { name: "Neutral/800",  resolvedType: "COLOR", values: { "Value": "#1F2937" } },
+    { name: "Neutral/900",  resolvedType: "COLOR", values: { "Value": "#111827" } },
+    { name: "Neutral/950",  resolvedType: "COLOR", values: { "Value": "#030712" } },
+
+    { name: "Success/50",  resolvedType: "COLOR", values: { "Value": "#F0FDF4" } },
+    { name: "Success/500", resolvedType: "COLOR", values: { "Value": "#22C55E" } },
+    { name: "Success/600", resolvedType: "COLOR", values: { "Value": "#16A34A" } },
+    { name: "Success/700", resolvedType: "COLOR", values: { "Value": "#15803D" } },
+    { name: "Success/900", resolvedType: "COLOR", values: { "Value": "#14532D" } },
+
+    { name: "Warning/50",  resolvedType: "COLOR", values: { "Value": "#FFFBEB" } },
+    { name: "Warning/500", resolvedType: "COLOR", values: { "Value": "#F59E0B" } },
+    { name: "Warning/600", resolvedType: "COLOR", values: { "Value": "#D97706" } },
+    { name: "Warning/700", resolvedType: "COLOR", values: { "Value": "#B45309" } },
+
+    { name: "Error/50",  resolvedType: "COLOR", values: { "Value": "#FEF2F2" } },
+    { name: "Error/500", resolvedType: "COLOR", values: { "Value": "#EF4444" } },
+    { name: "Error/600", resolvedType: "COLOR", values: { "Value": "#DC2626" } },
+    { name: "Error/700", resolvedType: "COLOR", values: { "Value": "#B91C1C" } },
+
+    { name: "Info/50",  resolvedType: "COLOR", values: { "Value": "#EFF6FF" } },
+    { name: "Info/500", resolvedType: "COLOR", values: { "Value": "#3B82F6" } },
+    { name: "Info/600", resolvedType: "COLOR", values: { "Value": "#2563EB" } },
+    { name: "Info/700", resolvedType: "COLOR", values: { "Value": "#1D4ED8" } }
+  ]
+```
+
+⚠️ **Replace all hex values above with the project's actual colors from APP_PLAN.md.** The values shown are Tailwind-based defaults.
+
+**Step 2: Create the Semantic collection with Light + Dark modes**
+
+```
+Tool: figma_setup_design_tokens
+Parameters:
+  collectionName: "Semantic"
+  modes: ["Light", "Dark"]
+  tokens: [
+    { name: "Background/Primary",   resolvedType: "COLOR", values: { "Light": "#FFFFFF", "Dark": "#030712" } },
+    { name: "Background/Secondary", resolvedType: "COLOR", values: { "Light": "#F9FAFB", "Dark": "#111827" } },
+    { name: "Background/Tertiary",  resolvedType: "COLOR", values: { "Light": "#F3F4F6", "Dark": "#1F2937" } },
+    { name: "Background/Inverse",   resolvedType: "COLOR", values: { "Light": "#111827", "Dark": "#F9FAFB" } },
+
+    { name: "Text/Primary",    resolvedType: "COLOR", values: { "Light": "#111827", "Dark": "#F9FAFB" } },
+    { name: "Text/Secondary",  resolvedType: "COLOR", values: { "Light": "#4B5563", "Dark": "#9CA3AF" } },
+    { name: "Text/Tertiary",   resolvedType: "COLOR", values: { "Light": "#9CA3AF", "Dark": "#6B7280" } },
+    { name: "Text/Inverse",    resolvedType: "COLOR", values: { "Light": "#FFFFFF", "Dark": "#111827" } },
+    { name: "Text/Link",       resolvedType: "COLOR", values: { "Light": "#2563EB", "Dark": "#60A5FA" } },
+    { name: "Text/Error",      resolvedType: "COLOR", values: { "Light": "#DC2626", "Dark": "#F87171" } },
+    { name: "Text/Success",    resolvedType: "COLOR", values: { "Light": "#16A34A", "Dark": "#4ADE80" } },
+
+    { name: "Border/Default",  resolvedType: "COLOR", values: { "Light": "#E5E7EB", "Dark": "#374151" } },
+    { name: "Border/Strong",   resolvedType: "COLOR", values: { "Light": "#D1D5DB", "Dark": "#4B5563" } },
+    { name: "Border/Focus",    resolvedType: "COLOR", values: { "Light": "#3B82F6", "Dark": "#60A5FA" } },
+
+    { name: "Surface/Card",     resolvedType: "COLOR", values: { "Light": "#FFFFFF", "Dark": "#111827" } },
+    { name: "Surface/Elevated", resolvedType: "COLOR", values: { "Light": "#FFFFFF", "Dark": "#1F2937" } },
+    { name: "Surface/Disabled", resolvedType: "COLOR", values: { "Light": "#F3F4F6", "Dark": "#1F2937" } },
+
+    { name: "Action/Primary",       resolvedType: "COLOR", values: { "Light": "#3B82F6", "Dark": "#60A5FA" } },
+    { name: "Action/Primary Hover",  resolvedType: "COLOR", values: { "Light": "#2563EB", "Dark": "#93C5FD" } },
+    { name: "Action/Primary Active", resolvedType: "COLOR", values: { "Light": "#1D4ED8", "Dark": "#BFDBFE" } },
+    { name: "Action/Secondary",      resolvedType: "COLOR", values: { "Light": "#F3F4F6", "Dark": "#374151" } },
+    { name: "Action/Secondary Hover", resolvedType: "COLOR", values: { "Light": "#E5E7EB", "Dark": "#4B5563" } },
+    { name: "Action/Destructive",       resolvedType: "COLOR", values: { "Light": "#EF4444", "Dark": "#F87171" } },
+    { name: "Action/Destructive Hover", resolvedType: "COLOR", values: { "Light": "#DC2626", "Dark": "#FCA5A5" } },
+    { name: "Action/Disabled",          resolvedType: "COLOR", values: { "Light": "#D1D5DB", "Dark": "#4B5563" } },
+
+    { name: "Feedback/Success BG",   resolvedType: "COLOR", values: { "Light": "#F0FDF4", "Dark": "#14532D" } },
+    { name: "Feedback/Success Text", resolvedType: "COLOR", values: { "Light": "#15803D", "Dark": "#4ADE80" } },
+    { name: "Feedback/Warning BG",   resolvedType: "COLOR", values: { "Light": "#FFFBEB", "Dark": "#78350F" } },
+    { name: "Feedback/Warning Text", resolvedType: "COLOR", values: { "Light": "#B45309", "Dark": "#FCD34D" } },
+    { name: "Feedback/Error BG",     resolvedType: "COLOR", values: { "Light": "#FEF2F2", "Dark": "#7F1D1D" } },
+    { name: "Feedback/Error Text",   resolvedType: "COLOR", values: { "Light": "#B91C1C", "Dark": "#FCA5A5" } },
+    { name: "Feedback/Info BG",      resolvedType: "COLOR", values: { "Light": "#EFF6FF", "Dark": "#1E3A8A" } },
+    { name: "Feedback/Info Text",    resolvedType: "COLOR", values: { "Light": "#1D4ED8", "Dark": "#93C5FD" } }
+  ]
+```
+
+This allows instant Light <> Dark theme switching in Figma by changing the variable mode on any frame.
 
 Option B — **Figma Color Styles** (simpler, no mode switching):
-1. Use `figma_execute` with `figma.createPaintStyle()` to create each color as a named Paint Style.
-2. See 04-figma-to-code.md → "Step 3 (Alternative): Create Color Styles via figma_execute" for the complete ready-to-run script that creates ~70 styles (primitives + semantic tokens).
-3. Name using the `Category / Token Name` convention from the table above.
+
+```javascript
+// Via figma_execute — create color styles programmatically
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  return {
+    r: parseInt(hex.slice(0, 2), 16) / 255,
+    g: parseInt(hex.slice(2, 4), 16) / 255,
+    b: parseInt(hex.slice(4, 6), 16) / 255
+  };
+}
+
+async function createColorStyle(name, hex) {
+  const style = figma.createPaintStyle();
+  style.name = name;
+  const rgb = hexToRgb(hex);
+  style.paints = [{ type: 'SOLID', color: rgb }];
+  return style;
+}
+
+// Primitives
+await createColorStyle("Primary / 50", "#EFF6FF");
+await createColorStyle("Primary / 100", "#DBEAFE");
+await createColorStyle("Primary / 200", "#BFDBFE");
+await createColorStyle("Primary / 300", "#93C5FD");
+await createColorStyle("Primary / 400", "#60A5FA");
+await createColorStyle("Primary / 500", "#3B82F6");
+await createColorStyle("Primary / 600", "#2563EB");
+await createColorStyle("Primary / 700", "#1D4ED8");
+await createColorStyle("Primary / 800", "#1E40AF");
+await createColorStyle("Primary / 900", "#1E3A8A");
+await createColorStyle("Primary / 950", "#172554");
+
+await createColorStyle("Neutral / 0",   "#FFFFFF");
+await createColorStyle("Neutral / 50",  "#F9FAFB");
+await createColorStyle("Neutral / 100", "#F3F4F6");
+await createColorStyle("Neutral / 200", "#E5E7EB");
+await createColorStyle("Neutral / 300", "#D1D5DB");
+await createColorStyle("Neutral / 400", "#9CA3AF");
+await createColorStyle("Neutral / 500", "#6B7280");
+await createColorStyle("Neutral / 600", "#4B5563");
+await createColorStyle("Neutral / 700", "#374151");
+await createColorStyle("Neutral / 800", "#1F2937");
+await createColorStyle("Neutral / 900", "#111827");
+await createColorStyle("Neutral / 950", "#030712");
+
+await createColorStyle("Success / 50",  "#F0FDF4");
+await createColorStyle("Success / 500", "#22C55E");
+await createColorStyle("Success / 600", "#16A34A");
+await createColorStyle("Success / 700", "#15803D");
+
+await createColorStyle("Warning / 50",  "#FFFBEB");
+await createColorStyle("Warning / 500", "#F59E0B");
+await createColorStyle("Warning / 600", "#D97706");
+await createColorStyle("Warning / 700", "#B45309");
+
+await createColorStyle("Error / 50",  "#FEF2F2");
+await createColorStyle("Error / 500", "#EF4444");
+await createColorStyle("Error / 600", "#DC2626");
+await createColorStyle("Error / 700", "#B91C1C");
+
+await createColorStyle("Info / 50",  "#EFF6FF");
+await createColorStyle("Info / 500", "#3B82F6");
+await createColorStyle("Info / 600", "#2563EB");
+await createColorStyle("Info / 700", "#1D4ED8");
+
+// Semantic tokens (Light mode)
+await createColorStyle("Background / Primary",   "#FFFFFF");
+await createColorStyle("Background / Secondary",  "#F9FAFB");
+await createColorStyle("Background / Tertiary",   "#F3F4F6");
+await createColorStyle("Background / Inverse",    "#111827");
+
+await createColorStyle("Text / Primary",   "#111827");
+await createColorStyle("Text / Secondary", "#4B5563");
+await createColorStyle("Text / Tertiary",  "#9CA3AF");
+await createColorStyle("Text / Inverse",   "#FFFFFF");
+await createColorStyle("Text / Link",      "#2563EB");
+await createColorStyle("Text / Error",     "#DC2626");
+await createColorStyle("Text / Success",   "#16A34A");
+
+await createColorStyle("Border / Default", "#E5E7EB");
+await createColorStyle("Border / Strong",  "#D1D5DB");
+await createColorStyle("Border / Focus",   "#3B82F6");
+
+await createColorStyle("Surface / Card",     "#FFFFFF");
+await createColorStyle("Surface / Elevated", "#FFFFFF");
+await createColorStyle("Surface / Disabled", "#F3F4F6");
+
+await createColorStyle("Action / Primary",         "#3B82F6");
+await createColorStyle("Action / Primary Hover",   "#2563EB");
+await createColorStyle("Action / Primary Active",  "#1D4ED8");
+await createColorStyle("Action / Secondary",       "#F3F4F6");
+await createColorStyle("Action / Secondary Hover", "#E5E7EB");
+await createColorStyle("Action / Destructive",       "#EF4444");
+await createColorStyle("Action / Destructive Hover", "#DC2626");
+await createColorStyle("Action / Disabled",          "#D1D5DB");
+
+await createColorStyle("Feedback / Success BG",   "#F0FDF4");
+await createColorStyle("Feedback / Success Text", "#15803D");
+await createColorStyle("Feedback / Warning BG",   "#FFFBEB");
+await createColorStyle("Feedback / Warning Text", "#B45309");
+await createColorStyle("Feedback / Error BG",     "#FEF2F2");
+await createColorStyle("Feedback / Error Text",   "#B91C1C");
+await createColorStyle("Feedback / Info BG",      "#EFF6FF");
+await createColorStyle("Feedback / Info Text",    "#1D4ED8");
+
+return { message: "Created all color styles" };
+```
 
 **⚠️ Always replace the default hex values in the scripts with the actual colors from `project/APP_PLAN.md`.** The defaults are Tailwind-based starting points.
 
-**After creation**, run the verification script from 04-figma-to-code.md → "Verifying Color Styles After Creation" to confirm all expected styles exist.
+**After creation**, run this verification script via `figma_execute`:
+
+```javascript
+// Verify all expected color styles exist
+const styles = figma.getLocalPaintStyles();
+const expected = [
+  "Primary / 500", "Neutral / 0", "Neutral / 900",
+  "Background / Primary", "Text / Primary", "Text / Secondary",
+  "Border / Default", "Action / Primary", "Surface / Card",
+  "Feedback / Success BG", "Feedback / Error BG"
+];
+const found = styles.map(s => s.name);
+const missing = expected.filter(e => !found.some(f => f === e));
+return {
+  totalStyles: styles.length,
+  expectedFound: expected.length - missing.length,
+  missing: missing,
+  allStyleNames: found.sort()
+};
+```
 
 ### 3C: Verify & Record
 

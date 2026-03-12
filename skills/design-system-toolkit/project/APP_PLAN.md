@@ -87,7 +87,7 @@ requirements:
 
 ```
 Active task: [e.g., "Designing buyer dispute flow — mobile screens"]
-Sub-skill loaded: [e.g., "01-mobile-web-ui-ux-design-guide.md"]
+Sub-skill loaded: [e.g., "01-design-guide.md"]
 Screens in progress: [e.g., "Dispute Detail, Evidence Upload, Resolution Options"]
 Blockers: [e.g., "Waiting on copy for error states"]
 ```

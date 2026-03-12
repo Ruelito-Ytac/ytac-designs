@@ -39,7 +39,8 @@ design-system-toolkit/
 │   └── APP_PLAN.md          ← Session state (context, decisions, progress)
 │
 └── skills/                  ← Reference library (do not edit)
-    ├── 01-mobile-web-ui-ux-design-guide.md   ← Design principles & patterns
+    ├── 01-design-guide.md                    ← Core design principles (§1-13)
+    ├── 01-ref-design-patterns.md             ← Reference: checklists, Figma workflow, icons, spacing, patterns (§14-26)
     ├── 02-ux-flow-audit.md                   ← UX flow validation (7 phases)
     ├── 03-ui-visual-audit.md                 ← UI visual inspection (11 layers)
     ├── 04a-figma-build-core.md               ← Figma build: screens & auto layout
@@ -55,7 +56,7 @@ design-system-toolkit/
 | What the user says | What to do |
 |---|---|
 | "Start a new design project" | `discovery.md` → Create `project/APP_PLAN.md` → `governance.md` Step 3 → Route to sub-skill |
-| "Design [screen/feature]" | Load `project/APP_PLAN.md` → Load `skills/01` |
+| "Design [screen/feature]" | Load `project/APP_PLAN.md` → Load `skills/01-design-guide` (+ `01-ref-design-patterns` if review/reference needed) |
 | "Audit this flow" / "Check this UX" | Load `project/APP_PLAN.md` (if exists) → Load `skills/02` |
 | "Audit this UI" / "Check these screens" | Load `project/APP_PLAN.md` (if exists) → Load `skills/03` |
 | "Full design review" | Load `project/APP_PLAN.md` (if exists) → Load `skills/02` then `skills/03` |
@@ -64,6 +65,7 @@ design-system-toolkit/
 | "Create a component" / "Add variants" | Load `project/APP_PLAN.md` → Load `skills/04b` |
 | "Convert to code" / "Export to React" | Load `project/APP_PLAN.md` → Load `skills/04c` |
 | "Fix my Figma file" / "Clean up" | Load `project/APP_PLAN.md` → Load `skills/04d` |
+| "Convert to code" / "Export to React" | Load `project/APP_PLAN.md` → Load `skills/04c` |
 | "Set up styles" / "Create variables" | `governance.md` → Load `skills/04a` for execution |
 | "Show project context" | Read `project/APP_PLAN.md` and display |
 | "Update project context" | `discovery.md` → Re-run specific questions → Update `project/APP_PLAN.md` |
