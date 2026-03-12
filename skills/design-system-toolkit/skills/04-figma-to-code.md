@@ -72,7 +72,7 @@ Before building anything in Figma, verify the project has:
 [ ] Icon sizing scale confirmed (12/16/20/24/32/40/48)
 [ ] All icon frames are square (width = height), auto layout center-center
 
-Missing any of these? → Run agents.md Step 3 first.
+Missing any of these? → Run governance.md Step 3 first.
 See 01-guide §20 (Iconography) and §21 (Border Radius) for full rules.
 ```
 
@@ -97,6 +97,16 @@ See 01-guide §20 (Iconography) and §21 (Border Radius) for full rules.
 | Read variables/tokens | `figma_get_variables` | `figma_get_token_values` |
 | Read styles | `figma_get_styles` | `Figma:get_variable_defs` |
 | Check design parity | `figma_check_design_parity` | Manual comparison |
+
+### Icon Page Integration
+
+When building screens that include icons:
+1. Read `icon_page_name` from `project/APP_PLAN.md`
+2. If set, use `get_design_context` to fetch available icons from that page
+3. Match needed icons to available icons by name/purpose
+4. Use the project's actual icon components — never substitute generic/emoji icons
+5. If an icon doesn't exist, flag it as missing and suggest adding it
+6. If `icon_page_name` is not set, ask the user which page contains their icons
 
 ---
 
@@ -1714,6 +1724,11 @@ The complete flow & annotation checks are embedded in the Full File Audit Proced
 - All Figma comments resolved or assigned
 - No orphan screens (every screen has incoming or outgoing connections)
 - Component descriptions populated for Dev Mode
+
+### Post-Build Validation
+
+After completing a build session, recommend to the user:
+> "Build complete! Run `/design:figma-autolayout-audit` to validate the auto layout structure of what we just built."
 
 ---
 

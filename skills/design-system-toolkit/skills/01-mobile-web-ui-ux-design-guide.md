@@ -42,10 +42,11 @@ description: >
 19. [Common UX Anti-Patterns](#19-common-ux-anti-patterns)
 20. [Iconography System](#20-iconography-system)
 21. [Placeholder Images — Unsplash in Figma](#21-placeholder-images--unsplash-in-figma)
-22. [Icon Source — The "UI Icons" Page](#22-icon-source--the-ui-icons-page)
+22. [Icon Source — The Project Icons Page](#22-icon-source--the-project-icons-page)
 23. [Border Radius System](#23-border-radius-system)
 24. [Data Flow Design](#24-data-flow-design)
 25. [Spacing & Sizing Enforcement](#25-spacing--sizing-enforcement)
+26. [Modern Design Patterns (2024-2026)](#26-modern-design-patterns-2024-2026)
 
 ---
 
@@ -1467,12 +1468,12 @@ For these, use a **wrapping frame** with the content as auto layout AND the over
 
 ### Design Tokens as Figma Styles & Variables
 
-**⚠️ Design system setup (text styles + color styles) MUST happen before designing any screens. See `agents.md` Step 3 for the full initialization procedure.**
+**⚠️ Design system setup (text styles + color styles) MUST happen before designing any screens. See `governance.md` for the full initialization procedure.**
 
 Once initialized, the design tokens in Figma should include:
 
-- **Text Styles**: 18 named styles covering Display through Helper (see Step 3A in agents.md)
-- **Color Variables**: Primitive palette (50–950 per hue) + Semantic tokens with Light/Dark modes (see Step 3B in agents.md)
+- **Text Styles**: 18 named styles covering Display through Helper (see Step 3A in governance.md)
+- **Color Variables**: Primitive palette (50–950 per hue) + Semantic tokens with Light/Dark modes (see Step 3B in governance.md)
 - **Spacing Variables**: FLOAT variables for consistent padding and gaps (4, 8, 12, 16, 24, 32, 48, 64)
 - **Border Radius Variables**: FLOAT variables matching the project's corner radius setting
 - **Shadow Styles**: Effect styles for elevation levels (sm, md, lg, xl)
@@ -2152,15 +2153,22 @@ Card Frame (auto layout, vertical, gap: 0)
 
 ---
 
-## 22. Icon Source — The "UI Icons" Page
+## 22. Icon Source — The Project Icons Page
 
-When building screens in Figma, **always pull icons from the "UI Icons" page** in the same Figma file. This is the single source of truth for all icons used in the project.
+When building screens in Figma, **always pull icons from the project's designated icon page** in the same Figma file. This is the single source of truth for all icons used in the project.
+
+### Determining the Icon Page Name
+
+1. **Check `project/APP_PLAN.md`** for the `branding.icon_page_name` field
+2. If set → use that page name (e.g., "UI Icons", "Assets/Icons", "Iconography")
+3. If NOT set → **ask the user**: "Which Figma page contains your project's icons?" Store the answer in APP_PLAN.md's `branding.icon_page_name` field before proceeding.
+4. **Never assume "UI Icons"** — always check APP_PLAN.md first
 
 ### How It Works
 
-The Figma file has a dedicated page named **"UI Icons"** that contains all icon components for the project. When you need an icon:
+The Figma file has a dedicated page (named per `icon_page_name` in APP_PLAN.md) that contains all icon components for the project. When you need an icon:
 
-1. **Find the icon on the "UI Icons" page** — icons are organized as components, named `Icon / [Name]` (e.g., `Icon / Search`, `Icon / Close`, `Icon / Home`)
+1. **Find the icon on the designated icon page (per APP_PLAN.md)** — icons are organized as components, named `Icon / [Name]` (e.g., `Icon / Search`, `Icon / Close`, `Icon / Home`)
 2. **Create an instance** of the icon component on your design page — drag it from the Assets panel or use `figma_instantiate_component` via MCP
 3. **Never copy-paste raw vectors** — always use component instances so they stay linked and update globally
 
@@ -2169,12 +2177,14 @@ The Figma file has a dedicated page named **"UI Icons"** that contains all icon 
 When Claude is building screens via MCP, use this workflow:
 
 ```
-Step 1: Find the icon component on the "UI Icons" page
+Step 1: Find the icon component on the designated icon page
 ─────────────────────────────────────────────────────
-Use figma_execute to search the "UI Icons" page for the component by name:
+Use figma_execute to search the designated icon page for the component by name:
 
-  const iconsPage = figma.root.children.find(p => p.name === "UI Icons");
-  if (!iconsPage) return { error: "No 'UI Icons' page found" };
+  // Use the icon_page_name from APP_PLAN.md (default: "UI Icons")
+  const ICON_PAGE_NAME = "{{icon_page_name}}"; // Replace with actual value from APP_PLAN.md
+  const iconsPage = figma.root.children.find(p => p.name === ICON_PAGE_NAME);
+  if (!iconsPage) return { error: `No '${ICON_PAGE_NAME}' page found. Check branding.icon_page_name in APP_PLAN.md` };
 
   await figma.loadAllPagesAsync();
 
@@ -2208,9 +2218,11 @@ then resize if needed using figma_resize_node (default: keep at 24×24).
 To see every icon available in the file:
 
 ```javascript
-// Via figma_execute — list all icon components on the "UI Icons" page
-const iconsPage = figma.root.children.find(p => p.name === "UI Icons");
-if (!iconsPage) return { error: "No 'UI Icons' page found in this file" };
+// Via figma_execute — list all icon components on the designated icon page
+// Use the icon_page_name from APP_PLAN.md (default: "UI Icons")
+const ICON_PAGE_NAME = "{{icon_page_name}}"; // Replace with actual value from APP_PLAN.md
+const iconsPage = figma.root.children.find(p => p.name === ICON_PAGE_NAME);
+if (!iconsPage) return { error: `No '${ICON_PAGE_NAME}' page found. Check branding.icon_page_name in APP_PLAN.md` };
 
 await figma.loadAllPagesAsync();
 
@@ -2226,21 +2238,21 @@ walk(iconsPage);
 return { total: icons.length, icons: icons.slice(0, 50) };
 ```
 
-### Rules for Using Icons from "UI Icons"
+### Rules for Using Icons from the Project Icon Page
 
 1. **Always use instances, never detach** — detached icons don't update when the source component changes
-2. **If an icon doesn't exist on the "UI Icons" page**, tell the user. Do not substitute a text character or emoji. Ask if they want to create the missing icon or use an alternative.
+2. **If an icon doesn't exist on the designated icon page**, tell the user. Do not substitute a text character or emoji. Ask if they want to create the missing icon or use an alternative.
 3. **Match the icon size to the sizing scale** (see §20 Icon Sizing Scale) — default is 24×24
 4. **Respect fill color** — icon instances should inherit color from the parent or use a color variable. Don't hard-code hex values on individual icons.
-5. **The "UI Icons" page is the only icon source** — never import icons from external libraries, URLs, or other Figma files unless the user explicitly asks
+5. **The designated icon page (per APP_PLAN.md) is the only icon source** — never import icons from external libraries, URLs, or other Figma files unless the user explicitly asks
 
 ### What NOT to Do
 
 - ❌ Copy-paste raw SVG vectors instead of using component instances
-- ❌ Create new one-off icon components on the design page — add them to "UI Icons" first
+- ❌ Create new one-off icon components on the design page — add them to the icon page first
 - ❌ Use text characters ("✕", "★", "→") as icon substitutes
 - ❌ Pull icons from a different page or external source without asking
-- ❌ Detach icon instances to "customize" them — instead, add a new variant on the "UI Icons" page
+- ❌ Detach icon instances to "customize" them — instead, add a new variant on the icon page
 
 ---
 
@@ -2818,6 +2830,69 @@ return {
 - ❌ **Gap + padding mismatch** — Section gap is 32px but items within sections also have 16px bottom margin, creating 48px visual gap between sections.
 - ❌ **HUG on content area** — The scrollable content area between header and footer is HUG instead of FILL. Footer floats up when content is short.
 - ❌ **FILL on a button** — Button stretches to full height of its parent instead of sizing to its content. Button should be HUG height.
+
+---
+
+## 26. Modern Design Patterns (2024-2026)
+
+These patterns define what "current" looks like in mobile and web UI. Apply these by default when designing new screens.
+
+### Anti-Crowding Rules
+
+Crowded designs are the #1 reason screens look dated or unprofessional. Apply these rules strictly:
+
+| Rule | Severity if Violated | Guidance |
+|------|---------------------|----------|
+| **Bottom sheet density** | 🔴 Critical | Max 2 content sections in a bottom sheet. If you need service types + driver list + navigation bar, split into a scrollable sheet or move secondary content to a separate view. |
+| **Card information density** | 🟠 Major | Max 3 data points per compact card. Prioritize: name + primary metric as prominent, secondary info as subtle. Hide tertiary details (plate numbers, IDs) until drill-down/detail view. |
+| **Map marker clustering** | 🟠 Major | When map markers overlap or cluster within 40px of each other, show a cluster indicator with count instead of individual markers. Declutter at zoom levels where icons touch. |
+| **Section spacing** | 🔴 Critical | Minimum 24px between distinct content sections. Minimum 16px between items within a section. No content touching device edges — 16px minimum screen padding on all sides. |
+
+### Visual Breathing Room
+
+- Content cards: 16px internal padding minimum on all sides
+- Between major sections: 24-32px gap
+- Headers: clear separation from content below (16-24px)
+- List items: 12-16px vertical padding
+- Screen edges: 16px minimum horizontal padding (never 0)
+
+### Progressive Disclosure
+
+- Show essential info upfront, details on tap
+- Expandable cards for secondary information
+- Drill-down views for detailed data
+- Peek-and-reveal patterns for preview → full view
+- Never show everything at once on a single screen
+
+### Subtle Elevation & Depth
+
+- Prefer soft shadows: `0 2px 8px rgba(0,0,0,0.08)` for cards, `0 4px 12px rgba(0,0,0,0.08)` for elevated elements
+- Avoid hard borders (1px solid #ccc) as the primary surface separation — use shadows or background contrast instead
+- Layer surfaces with slight elevation differences
+- Glass/blur effects for overlays and bottom sheets
+
+### Typography Hierarchy
+
+- Clear size jumps: heading (24px) / body (16px) / caption (12px)
+- Use font weight contrast: Bold title, Regular body, Medium labels
+- Don't rely on size alone — combine size + weight + color for hierarchy
+- Minimum body text: 16px on mobile, 14px on desktop
+
+### Rounded, Soft UI
+
+- Cards: 12-16px corner radius
+- Buttons: 8-12px corner radius
+- Chips/tags: 20-24px corner radius (near-pill)
+- Inputs: 8-12px corner radius
+- Sharp corners (0-4px) look dated in modern mobile UI — avoid unless the brand tone is "Corporate" or "Sharp"
+
+### Color Restraint
+
+- 1 primary action color used for CTAs and key interactive elements
+- 1 secondary color for accents and supporting elements
+- Neutral backgrounds (white, light gray, off-white)
+- Use color for meaning: status indicators, action states, alerts
+- Avoid 3+ competing brand colors on a single screen
 
 ---
 

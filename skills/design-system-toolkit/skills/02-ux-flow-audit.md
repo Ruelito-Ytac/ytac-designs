@@ -179,6 +179,12 @@ Review each individual screen in the flow against these criteria.
 | 2.14 | Are fonts/sizes consistent with the type scale? | | |
 | 2.15 | Are colors using design tokens, not hardcoded? | | |
 
+**Content Density (Anti-Crowding):**
+| # | Check | Pass/Fail | Notes |
+|---|-------|-----------|-------|
+| 2.16 | Does any bottom sheet contain 3 or more distinct content sections? (🟠 Major if yes — split or make scrollable) | | |
+| 2.17 | Does the screen show all information at once without visual hierarchy or progressive disclosure? (🟠 Major if yes — prioritize and layer) | | |
+
 ### Screen-Level Fix Patterns
 
 | Problem Found | Fix |
@@ -189,6 +195,8 @@ Review each individual screen in the flow against these criteria.
 | User doesn't know where they are | Add progress stepper, breadcrumb, or clear title |
 | Important action below the fold | Move it up, or add a sticky bottom bar with the CTA |
 | Inconsistent with other screens | Reference the design system — use the same component variants |
+| Bottom sheet has 3+ sections | Split content: keep primary actions in sheet, move lists/secondary content to separate view or scrollable area |
+| All information shown at once | Apply progressive disclosure: show summary → expand for details. Use cards, accordions, or tabs to layer information |
 
 ---
 
@@ -410,6 +418,8 @@ Is the flow mentally effortless or exhausting?
 | 7.8 | Are decisions binary when possible? (Yes/No rather than choose from 10) | | |
 | 7.9 | Is the language action-oriented? ("Save changes" not "Submit") | | |
 | 7.10 | Would a first-time user understand every screen without help text? | | |
+| 7.11 | Is progressive disclosure used for data-dense screens? (🟡 Minor if not — consider expandable sections) | | |
+| 7.12 | Does the user need to process 4+ distinct data categories simultaneously on a single screen? (🟠 Major if yes — group or paginate) | | |
 
 ### Cognitive Load Scoring
 
@@ -435,6 +445,8 @@ Count the "mental tasks" on each screen:
 | Button label is vague ("Submit", "Continue") | Use action-specific labels ("Place Order", "Send Message", "Create Account") |
 | User can't predict the outcome | Add a preview, summary step, or explanatory text before the action |
 | Multiple actions competing for attention | Make ONE primary (filled, prominent), rest secondary (outlined or text) |
+| No progressive disclosure | Add expandable sections, "Show more" patterns, or drill-down views for detailed information |
+| 4+ data categories on one screen | Group related data into tabs or sections. Show summary metrics with drill-down for details |
 
 ---
 

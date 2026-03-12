@@ -1,6 +1,6 @@
 # Design System Toolkit — Claude Code Plugin
 
-A Claude Code plugin that turns Claude into a senior UI/UX design consultant. Covers design systems, UX flow auditing, visual QA, Figma automation, and design-to-code export.
+A Claude Code plugin that turns Claude into a senior UI/UX design consultant. Covers design systems, UX flow auditing, visual QA, Figma auto layout auditing, Figma automation, and design-to-code export. Use `/design` for the main menu, or sub-commands like `/design:ux-audit`, `/design:ui-audit`, `/design:screen` for direct access.
 
 ---
 
@@ -8,10 +8,10 @@ A Claude Code plugin that turns Claude into a senior UI/UX design consultant. Co
 
 Once installed, Claude gains the knowledge of a senior UX/UI consultant. Instead of giving vague design advice, Claude will:
 
-- **Ask the right questions** before designing anything (23-question discovery)
+- **Ask the right questions** before designing anything (6 core questions, one at a time)
 - **Remember your project context** across sessions via `APP_PLAN.md`
 - **Apply industry standards** — Nielsen's heuristics, WCAG accessibility, competitive benchmarks, design tokens
-- **Audit existing designs** with structured frameworks (7-phase UX audit, 11-layer visual audit)
+- **Audit existing designs** with structured frameworks (7-phase UX audit, 11-layer visual audit, 6-phase auto layout audit)
 - **Build and fix Figma files** — auto layout, components, styles, variables, file cleanup
 - **Export designs to code** — React, Vue, HTML/CSS, Tailwind
 - **Generate actionable fix recommendations** with severity ratings, not just "this could be better"
@@ -82,6 +82,27 @@ Or pass your request directly:
 /design Fix my Figma file
 ```
 
+### Sub-Commands (Direct Access)
+
+Skip the menu and go straight to a specific workflow:
+
+```
+/design:ux-audit                     — Audit a UX flow (7 phases)
+/design:ui-audit                     — Audit UI visuals (11 layers)
+/design:full-design-audit            — Combined UX + UI audit
+/design:figma-autolayout-audit       — Audit Figma auto layout (6 phases)
+/design:screen                       — Design a specific screen
+/design:figma-build                  — Build or fix in Figma
+```
+
+Each sub-command accepts an optional argument:
+
+```
+/design:ux-audit https://figma.com/design/abc123/...
+/design:screen Login screen
+/design:figma-build Create the login screen in Figma
+```
+
 ### Option 2: Natural Language (Auto-Trigger)
 
 The skill also auto-triggers when you mention anything design-related. Just talk naturally:
@@ -102,11 +123,12 @@ Claude recognizes these phrases and loads the toolkit automatically — no slash
 |---|---|
 | `/design` (no prompt) | Interactive menu — pick what you want to do |
 | `/design [prompt]` | Routes directly to the right sub-skill |
-| "Start a new design project" | Full 23-question discovery → creates `APP_PLAN.md` → routes to sub-skill |
+| "Start a new design project" | 6-question progressive discovery → creates `APP_PLAN.md` → routes to sub-skill |
 | "Design [screen/feature]" | Design guidance using your project context |
 | "Audit this flow" | 7-phase UX flow audit with severity ratings |
 | "Audit this UI" / "Check these screens" | 11-layer visual inspection |
 | "Full design review" | UX audit + visual audit combined |
+| "Audit auto layout" / "Check layout" | 6-phase Figma auto layout audit |
 | "Build this in Figma" | Constructs screens/components in Figma via MCP |
 | "Convert to code" / "Export to React" | Extracts Figma design → generates production code |
 | "Fix my Figma file" | Auto layout repair, style compliance, cleanup |
@@ -120,12 +142,13 @@ Claude recognizes these phrases and loads the toolkit automatically — no slash
 
 When you say "start a new design project" (or use `/design` to start one), Claude runs a structured discovery:
 
-1. **23-question discovery** covering project identity, platform, branding, design system setup, typography, navigation, and special requirements
-2. **Generates `APP_PLAN.md`** — a living document with your project context in YAML
-3. **Derives 3-5 design principles** from your answers (e.g. "Clarity over cleverness", "Mobile-first always")
-4. **Routes to the right sub-skill** based on what you want to do first
+1. **6 core questions asked one at a time** — project name, platform, audience, brand colors, navigation, priority screens
+2. **Deep questions asked on-demand** — only when the current task needs them (e.g., icon page name when building in Figma, fonts when designing text-heavy screens)
+3. **Generates `APP_PLAN.md`** — a living document with your project context in YAML
+4. **Derives 3-5 design principles** from your answers (e.g. "Clarity over cleverness", "Mobile-first always")
+5. **Routes to the right sub-skill** based on what you want to do first
 
-You don't need to answer all 23 questions — Claude skips anything it already knows from your conversation.
+Claude never asks more than one question per message, and skips anything it already knows.
 
 ---
 
@@ -168,19 +191,28 @@ ytac-designs/
 |   +-- plugin.json                      <- Plugin metadata
 |
 |-- commands/
-|   +-- design.md                        <- /design slash command
+|   |-- design.md                        <- /design slash command (main menu)
+|   |-- design:ux-audit.md              <- /design:ux-audit sub-command
+|   |-- design:ui-audit.md              <- /design:ui-audit sub-command
+|   |-- design:full-design-audit.md     <- /design:full-design-audit sub-command
+|   |-- design:figma-autolayout-audit.md <- /design:figma-autolayout-audit sub-command
+|   |-- design:screen.md                <- /design:screen sub-command
+|   +-- design:figma-build.md           <- /design:figma-build sub-command
 |
 |-- skills/
 |   +-- design-system-toolkit/
 |       |-- SKILL.md                     <- Entry point (read this first)
-|       |-- agents.md                    <- Orchestrator (discovery, routing, governance)
+|       |-- discovery.md                 <- Progressive project discovery (6 core Q's)
+|       |-- router.md                    <- Intent classification & menu routing
+|       |-- governance.md                <- Design system init, lifecycle, versioning
 |       |-- project/
 |       |   +-- APP_PLAN.md              <- Session state template
 |       +-- skills/
 |           |-- 01-mobile-web-ui-ux-design-guide.md
 |           |-- 02-ux-flow-audit.md
 |           |-- 03-ui-visual-audit.md
-|           +-- 04-figma-to-code.md
+|           |-- 04-figma-to-code.md
+|           +-- 05-figma-autolayout-audit.md
 |
 |-- .gitignore
 +-- README.md                            <- You are here
@@ -194,12 +226,15 @@ ytac-designs/
 | `.claude-plugin/plugin.json` | Plugin identity — name, version, description |
 | `commands/design.md` | The `/design` slash command definition |
 | `skills/design-system-toolkit/SKILL.md` | Entry point — routes to the correct sub-skill |
-| `skills/design-system-toolkit/agents.md` | The brain — discovery, routing, governance rules |
+| `skills/design-system-toolkit/discovery.md` | Progressive project discovery — 6 core questions, one at a time |
+| `skills/design-system-toolkit/router.md` | Intent classification & menu routing (base `/design` only) |
+| `skills/design-system-toolkit/governance.md` | Design system initialization, lifecycle, versioning |
 | `skills/design-system-toolkit/project/APP_PLAN.md` | Template for project session state |
 | `skills/design-system-toolkit/skills/01-...` | Design reference — 18 sections (typography, color, layout, navigation, forms, accessibility, etc.) |
 | `skills/design-system-toolkit/skills/02-...` | 7-phase UX flow audit — structure, screen quality, mobile usability, interactions, edge cases |
 | `skills/design-system-toolkit/skills/03-...` | 11-layer visual audit — spacing, typography, color, components, icons, surfaces, responsive |
 | `skills/design-system-toolkit/skills/04-...` | Figma production & code export — auto layout, components, styles/variables, design-to-code |
+| `skills/design-system-toolkit/skills/05-...` | Figma auto layout audit — 6-phase inspection (direction, sizing, spacing, alignment, nesting, positioning) |
 
 ---
 
@@ -225,7 +260,7 @@ Figma mastery: auto layout, component construction, variant & property architect
 
 ## Governance (Built In)
 
-The toolkit includes design system governance in `agents.md`:
+The toolkit includes design system governance in `governance.md`:
 
 - **Ownership model** — System Owner, Contributors, Consumers, Reviewers
 - **Contribution workflow** — Identify -> Propose -> Review -> Integrate
@@ -271,10 +306,12 @@ To remove the marketplace entirely:
 | Metric | Value |
 |---|---|
 | Total lines | ~5,950 |
-| Discovery questions | 23 |
-| Design guide sections | 18 |
+| Core discovery questions | 6 (+ deep questions on-demand) |
+| Sub-commands | 6 (ux-audit, ui-audit, full-design-audit, figma-autolayout-audit, screen, figma-build) |
+| Design guide sections | 26 |
 | UX audit phases | 7 |
 | Visual audit layers | 11 |
+| Auto layout audit phases | 6 |
 | Figma-to-code sections | 14 |
 | Nielsen's heuristics mapped | All 10 |
 | Industry benchmarks | 6 categories |

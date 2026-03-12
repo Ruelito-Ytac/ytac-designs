@@ -86,6 +86,8 @@ The fastest way to spot an unpolished design is inconsistent spacing. This layer
 | 1.4 | Are gaps between sections consistent? (Same spacing between all major sections) | | |
 | 1.5 | Are gaps between items within a group consistent? | | |
 | 1.6 | Is spacing proportional to hierarchy? (More space between major sections, less within groups) | | |
+| 1.7 | Is there at least 16px spacing between distinct content sections? (🔴 Critical if less — sections must breathe) | | |
+| 1.8 | Does any content touch the device edges with 0px screen padding? (🔴 Critical — minimum 16px on all sides) | | |
 
 ### Internal Padding Checks (🔴 Zero-Padding = Critical)
 
@@ -357,6 +359,8 @@ These checks catch the second most common spacing bug: wrong sizing mode causing
 | 5.11 | Is image quality sufficient? (No blurry or pixelated images at display size) | | |
 | 5.12 | Do avatars have a fallback? (Initials or generic icon when no photo) | | |
 | 5.13 | Are illustrations/empty-state graphics consistent in style? | | |
+| 5.14 | On map screens, do markers/icons cluster within 40px without a grouping indicator? (🟠 Major — use cluster indicators) | | |
+| 5.15 | Do compact cards display 4+ data points? (🟠 Major — max 3 data points per compact card, hide rest in detail view) | | |
 
 ### Icon & Image Defect Catalog
 
@@ -392,6 +396,7 @@ These checks catch the second most common spacing bug: wrong sizing mode causing
 | 6.8 | Are border widths consistent? (1px for subtle, 2px for emphasis — not random) | | |
 | 6.9 | Are border colors from the token palette? | | |
 | 6.10 | Is corner radius consistent across components at the same level? | | |
+| 6.11 | Are hard borders (1px solid) used as the primary surface separation instead of subtle shadows? (🟡 Minor — prefer soft shadows for modern look) | | |
 
 ### Corner Radius Consistency
 
@@ -466,7 +471,7 @@ Verify the design holds at all screen sizes.
 
 ## 9. Layer 8: Modern Design Patterns
 
-Does the interface feel current (2024–2025+) or does it look like it was designed in 2016?
+Does the interface feel current (2024–2026+) or does it look like it was designed in 2016?
 
 ### Modernity Checks
 
@@ -482,6 +487,8 @@ Does the interface feel current (2024–2025+) or does it look like it was desig
 | 8.8 | Is dark mode available and intentionally designed? | | |
 | 8.9 | Are skeleton loading screens used instead of blank-then-pop? | | |
 | 8.10 | Are form inputs large and touch-friendly? (Not tiny bordered rectangles) | | |
+| 8.11 | Is the corner radius under 8px on cards or buttons? (🟡 Minor — modern mobile UI uses 8-16px radius) | | |
+| 8.12 | Are data-dense screens missing progressive disclosure patterns? (🟠 Major — show summary first, details on interaction) | | |
 
 ### Outdated vs Modern Reference
 
@@ -805,7 +812,7 @@ TOKEN/STYLE: Use Bottom Tab Bar component from design system
 
 Quick checklist to determine if a design feels current:
 
-### Modern Design Fingerprint (2024–2025+)
+### Modern Design Fingerprint (2024–2026+)
 - ✅ Generous whitespace and breathing room
 - ✅ Soft, rounded corners (8–16px, not sharp 0px)
 - ✅ Subtle, diffused shadows (not hard drop shadows)

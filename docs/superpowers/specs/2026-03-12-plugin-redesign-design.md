@@ -19,10 +19,45 @@ The ytac-designs plugin has four issues:
 Split the monolithic `agents.md` (991 lines) into focused modules:
 
 - `discovery.md` — progressive question flow
-- `router.md` — lightweight intent-to-skill dispatcher
+- `router.md` — lightweight intent-to-skill dispatcher (used ONLY by base `/design` command for interactive menu and free-text intent parsing; sub-commands bypass it entirely)
 - `governance.md` — design system governance rules
 
 Each `/design:*` sub-command routes directly to its handler instead of going through the full orchestrator.
+
+### Technical Validation: Sub-Command Naming
+
+Claude Code's plugin system uses the `plugin-name:skill-name` format for skill references (e.g., `superpowers:brainstorming`, `ruel-system-design-ui-ux-figma:design`). Sub-commands will be implemented as separate **command files** in `commands/` with the colon separator in the `name` frontmatter field.
+
+- **Primary format:** `design:ux-audit` (matching the user's requested `/design:ux-audit` invocation)
+- **Fallback format:** If Claude Code's command parser does not support colons in command names, use hyphens: `design-ux-audit` (invoked as `/design-ux-audit`)
+- **Validation step:** During implementation, create one test command file with a colon name and verify it appears in Claude Code's skill list before creating all 6 sub-commands
+
+### Router.md Role Definition
+
+`router.md` is ONLY loaded by the base `/design` command. Its responsibilities:
+
+1. **Interactive menu** — when `/design` is invoked with no arguments, present the menu of available workflows
+2. **Free-text intent classification** — when `/design <some prompt>` is invoked, classify intent using keyword matching:
+   - "audit flow/UX/journey" → load skill 02
+   - "audit UI/visual/design" → load skill 03
+   - "audit auto layout/autolayout" → load skill 05
+   - "design/create/build screen" → load skill 01
+   - "build in Figma/create in Figma" → load skill 04
+   - "full audit/review everything" → skill 02 then skill 03
+3. **Sub-commands bypass router.md entirely** — `/design:ux-audit` loads skill 02 directly without touching router.md
+
+### Governance.md Contents
+
+Extracted from `agents.md`, `governance.md` contains:
+
+- **Design system initialization checklist** (current Step 3): text styles, color systems, spacing scales setup in Figma
+- **Gate check**: no designing until text styles + color styles exist in Figma
+- **Component lifecycle stages**: Proposed → Draft → Beta → Stable → Deprecated
+- **Contribution process**: Identify → Propose → Review → Integrate
+- **Version management**: semantic versioning rules (MAJOR/MINOR/PATCH)
+- **Deprecation process**: 5-step with 30-day minimum notice
+- **Audit schedule**: weekly/monthly/quarterly/annually cadence
+- **Ownership model**: System Owner, Contributors, Consumers, Reviewers
 
 ### File Structure (After)
 
@@ -59,7 +94,7 @@ skills/design-system-toolkit/
 
 ### Core Questions (Always Asked, One at a Time)
 
-7 questions asked sequentially, each waiting for the user's response before proceeding:
+6 questions asked sequentially, each waiting for the user's response before proceeding:
 
 1. **Project name & description** — What's the project called and what does it do?
 2. **Platform** — Mobile / Web / Cross-platform? (if mobile: iOS, Android, or both?)
@@ -67,7 +102,6 @@ skills/design-system-toolkit/
 4. **Brand colors & visual tone** — Primary/secondary colors + tone (Clean, Bold, Dark, Warm, Corporate, Playful)
 5. **Navigation pattern** — Bottom tabs / Top tabs / Drawer / Sidebar? How many sections?
 6. **Priority flows/screens** — What are the first 2-3 screens or flows to design?
-7. **Figma icon page name** — Which Figma page contains your icons? (e.g., "UI Icons", "Assets/Icons")
 
 ### Deep Questions (On-Demand)
 
@@ -75,6 +109,7 @@ Asked one at a time, only when the current task needs that information:
 
 | Trigger Context | Questions Asked |
 |----------------|----------------|
+| Building in Figma with existing icon assets | Figma icon page name (e.g., "UI Icons", "Assets/Icons") |
 | Designing text-heavy screens | Brand fonts (primary & secondary), base text size (14/16/18px) |
 | Setting up design system | Corner radius style, spacing density, existing design system status |
 | Building responsive layouts | Target screen sizes, Figma file structure (single/multi) |
@@ -93,11 +128,11 @@ Asked one at a time, only when the current task needs that information:
 
 | Command | Routes To | Requires Discovery? |
 |---------|-----------|---------------------|
-| `/design` | discovery.md → router.md → interactive menu | Yes (7 core Q's if no APP_PLAN) |
+| `/design` | discovery.md → router.md → interactive menu | Yes (6 core Q's if no APP_PLAN) |
 | `/design:screen` | discovery.md (if needed) → skill 01 | Yes if no APP_PLAN |
 | `/design:ux-audit` | skill 02 directly | Optional (works without) |
 | `/design:ui-audit` | skill 03 directly | Optional (works without) |
-| `/design:full-design-audit` | skill 02 then skill 03 (sequential) | Optional (works without) |
+| `/design:full-design-audit` | skill 02 then skill 03 (sequential, see context transfer below) | Optional (works without) |
 | `/design:figma-autolayout-audit` | skill 05 (NEW) | Optional |
 | `/design:figma-build` | skill 04 (build mode) | Yes if no APP_PLAN |
 
@@ -109,6 +144,16 @@ Each command file is a markdown skill definition with:
 - Body — instructions to load APP_PLAN.md if it exists, then route to the target skill
 
 Audit commands work without discovery — you can point them at any Figma URL and get immediate results. Design/build commands need project context first.
+
+### Full Design Audit: Context Transfer Between Skills
+
+When `/design:full-design-audit` runs skill 02 (UX) then skill 03 (UI) sequentially:
+
+1. Skill 02 runs all 7 phases and produces its findings report
+2. Findings are written to the `Outstanding Issues` section of APP_PLAN.md (if it exists) or kept in conversation context
+3. Skill 03 then runs all 11 layers, with access to skill 02's findings for cross-referencing
+4. The final output is **two separate reports presented sequentially** (UX findings first, then UI findings), with a combined severity summary at the end
+5. Both skills always run regardless of severity — Critical UX issues do not block the UI audit, since the user requested a full review
 
 ### All commands accept `$ARGUMENTS`
 
@@ -123,8 +168,11 @@ Each sub-command accepts an optional prompt via `$ARGUMENTS` for direct context:
 
 ```yaml
 branding:
+  icon_set: "Phosphor"          # RETAINED — icon library name (Phosphor, Lucide, etc.)
   icon_page_name: "UI Icons"    # NEW — name of Figma page containing project icons
 ```
+
+Note: `icon_set` (icon library) is retained alongside `icon_page_name` (Figma page). They serve different purposes — `icon_set` identifies the library for consistency checks, `icon_page_name` tells Figma MCP where to find the actual components.
 
 ### Icon Lookup Process (5 Steps)
 
@@ -169,12 +217,30 @@ These rules are added as Critical/Major severity checks:
 | Rounded, soft UI | Corner radius 12-16px for cards, 8-12px for buttons, 20-24px for chips/tags. Sharp corners (0-4px) look dated. |
 | Color restraint | 1 primary action color, 1 secondary. Neutral backgrounds. Color for meaning (status, actions), not decoration. |
 
-### Stricter Audit Checks (Added to Skills 02, 03)
+### Stricter Audit Checks (Added to Skills 02, 03) — Placement Map
 
-Skills 02 and 03 get new checks that flag:
+New checks are inserted into specific phases/layers of the existing audit frameworks:
 
-- **Skill 02 (UX audit):** Bottom sheets with 3+ content sections, screens with no progressive disclosure, flows that show all information at once without hierarchy
-- **Skill 03 (UI audit):** Cards with 4+ data points, spacing less than 16px between sections, marker/icon clustering without grouping, corners under 8px radius, hard borders instead of shadows
+**Skill 02 (UX audit) — new checks by phase:**
+
+| Phase | New Check |
+|-------|-----------|
+| Phase 2: Screen-by-Screen | Bottom sheets with 3+ content sections → Major severity |
+| Phase 2: Screen-by-Screen | Screens showing all information at once without hierarchy → Major severity |
+| Phase 7: Cognitive Load | No progressive disclosure pattern used → Minor severity |
+| Phase 7: Cognitive Load | Flows that require user to process 4+ distinct data categories simultaneously → Major severity |
+
+**Skill 03 (UI audit) — new checks by layer:**
+
+| Layer | New Check |
+|-------|-----------|
+| Layer 1: Spacing & Alignment | Spacing less than 16px between distinct content sections → Critical severity |
+| Layer 1: Spacing & Alignment | Content touching device edges (0px screen padding) → Critical severity |
+| Layer 5: Icons & Imagery | Map marker/icon clustering without grouping within 40px → Major severity |
+| Layer 5: Icons & Imagery | Cards with 4+ data points in compact layout → Major severity |
+| Layer 6: Surfaces & Elevation | Hard borders (1px solid) used instead of subtle shadows → Minor severity |
+| Layer 8: Modern Design Patterns | Corner radius under 8px on cards/buttons → Minor severity |
+| Layer 8: Modern Design Patterns | No progressive disclosure pattern on data-dense screens → Major severity |
 
 ## Feature 5: Figma Auto Layout Audit (New Skill 05)
 
@@ -200,9 +266,18 @@ Skills 02 and 03 get new checks that flag:
 
 Same structured report as skills 02 and 03: findings grouped by phase, severity-tagged, with specific fix recommendations and Figma property values to change.
 
+## Migration Notes
+
+- The base `/design` command remains fully functional — existing users are not disrupted
+- Existing APP_PLAN.md files are forward-compatible (they just won't have `icon_page_name` until the user provides it; the fallback prompt handles this)
+- `agents.md` deletion happens as the LAST step after all three replacement files (`discovery.md`, `router.md`, `governance.md`) are verified working
+- Skill 04 (Figma build) should recommend running `/design:figma-autolayout-audit` after completing a build session, since the two workflows are complementary
+
 ## Testing Plan
 
-1. Run `/design` with no existing APP_PLAN.md — verify 7 questions asked one at a time
+### Happy Path Tests
+
+1. Run `/design` with no existing APP_PLAN.md — verify 6 questions asked one at a time
 2. Run `/design` with existing APP_PLAN.md — verify discovery is skipped, routes to menu
 3. Run each sub-command (`/design:ux-audit`, `/design:ui-audit`, etc.) — verify direct routing
 4. Run `/design:screen` — verify it asks for project context if no APP_PLAN exists
@@ -210,3 +285,11 @@ Same structured report as skills 02 and 03: findings grouped by phase, severity-
 6. Create a user flow — verify icons are fetched from the configured icon page
 7. Run `/design:ui-audit` on the Trikogo screenshot — verify anti-crowding rules trigger
 8. Run `/design:figma-autolayout-audit` on a Figma frame — verify 6-phase inspection runs
+
+### Edge Case & Error Tests
+
+9. Run `/design:screen` with no Figma MCP connected — verify graceful error message
+10. Run a flow that references `icon_page_name` but the page doesn't exist in the Figma file — verify it asks the user to correct it
+11. Run `/design:full-design-audit` and interrupt mid-way through skill 02 — verify skill 03 does not run with partial context
+12. Verify existing APP_PLAN.md files without `icon_page_name` trigger the fallback prompt when icons are needed
+13. Verify sub-command naming works in Claude Code (colon format validation) — if not, switch to hyphen fallback

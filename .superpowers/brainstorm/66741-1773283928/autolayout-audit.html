@@ -1,0 +1,117 @@
+<h2>Section 4: Figma Auto Layout Audit Skill (New Skill 05)</h2>
+<p class="subtitle">Dedicated audit for Figma auto layout structure and best practices</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">05-figma-autolayout-audit.md — 6-Phase Inspection</div>
+    <div class="mockup-body" style="padding: 20px;">
+
+      <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 20px;">
+        <span style="background: #9b59b6; color: white; border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; font-size: 14px;">1</span>
+        <div>
+          <div style="font-weight: bold; font-size: 14px;">Layout Direction & Wrapping</div>
+          <div style="font-size: 12px; color: #666; margin-top: 4px;">Is auto layout horizontal or vertical? Does it match the content flow? Are wrapping rules correct for responsive behavior? Flag: horizontal layout used for vertical content stacks, missing wrap on tag/chip groups.</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 20px;">
+        <span style="background: #9b59b6; color: white; border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; font-size: 14px;">2</span>
+        <div>
+          <div style="font-weight: bold; font-size: 14px;">Sizing Modes (HUG vs FILL vs FIXED)</div>
+          <div style="font-size: 12px; color: #666; margin-top: 4px;">
+            <div style="margin-bottom: 4px;"><span style="background:#e74c3c22; color:#e74c3c; padding: 1px 6px; border-radius: 3px; font-size: 11px;">CRITICAL</span> Content area set to HUG instead of FILL → footer floats mid-screen</div>
+            <div style="margin-bottom: 4px;"><span style="background:#e74c3c22; color:#e74c3c; padding: 1px 6px; border-radius: 3px; font-size: 11px;">CRITICAL</span> Fixed width on elements that should stretch (buttons, inputs, cards)</div>
+            <div><span style="background:#e67e2222; color:#e67e22; padding: 1px 6px; border-radius: 3px; font-size: 11px;">MAJOR</span> Parent is FILL but children are all FIXED → wasted space on larger screens</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 20px;">
+        <span style="background: #9b59b6; color: white; border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; font-size: 14px;">3</span>
+        <div>
+          <div style="font-weight: bold; font-size: 14px;">Padding & Spacing Consistency</div>
+          <div style="font-size: 12px; color: #666; margin-top: 4px;">All padding/gaps should follow 8px grid (8, 12, 16, 20, 24, 32, 40, 48). Flag: zero padding on interactive elements, inconsistent gaps between siblings, mixed spacing values within same component type.</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 20px;">
+        <span style="background: #9b59b6; color: white; border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; font-size: 14px;">4</span>
+        <div>
+          <div style="font-weight: bold; font-size: 14px;">Alignment & Distribution</div>
+          <div style="font-size: 12px; color: #666; margin-top: 4px;">Primary alignment (top-left, center, space-between). Counter alignment for cross-axis. Flag: centered content in left-aligned containers, space-between with only 1 child, mismatched alignment across sibling frames.</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 20px;">
+        <span style="background: #9b59b6; color: white; border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; font-size: 14px;">5</span>
+        <div>
+          <div style="font-weight: bold; font-size: 14px;">Nesting Depth & Structure</div>
+          <div style="font-size: 12px; color: #666; margin-top: 4px;">Flag: auto layout nesting deeper than 5 levels (simplify), unnecessary wrapper frames (single child inside auto layout parent), frames without auto layout that should have it.</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 0;">
+        <span style="background: #9b59b6; color: white; border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; font-size: 14px;">6</span>
+        <div>
+          <div style="font-weight: bold; font-size: 14px;">Absolute Positioning Audit</div>
+          <div style="font-size: 12px; color: #666; margin-top: 4px;">Flag: elements using absolute position that could be in auto layout flow, overlapping elements that break on different screen sizes, absolute-positioned elements without constraints.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <div class="mockup">
+    <div class="mockup-header">Severity Ratings (Same as Other Audits)</div>
+    <div class="mockup-body" style="padding: 20px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;">
+        <div style="text-align: center; padding: 12px; background: #fdf2f2; border-radius: 8px;">
+          <div style="font-size: 20px; margin-bottom: 4px;">&#128308;</div>
+          <div style="font-weight: bold; font-size: 12px;">Critical</div>
+          <div style="font-size: 11px; color: #888; margin-top: 4px;">Layout breaks on different screens</div>
+        </div>
+        <div style="text-align: center; padding: 12px; background: #fef6f0; border-radius: 8px;">
+          <div style="font-size: 20px; margin-bottom: 4px;">&#128992;</div>
+          <div style="font-weight: bold; font-size: 12px;">Major</div>
+          <div style="font-size: 11px; color: #888; margin-top: 4px;">Wasted space, wrong sizing mode</div>
+        </div>
+        <div style="text-align: center; padding: 12px; background: #fefce8; border-radius: 8px;">
+          <div style="font-size: 20px; margin-bottom: 4px;">&#128993;</div>
+          <div style="font-weight: bold; font-size: 12px;">Minor</div>
+          <div style="font-size: 11px; color: #888; margin-top: 4px;">Off-grid spacing, unnecessary nesting</div>
+        </div>
+        <div style="text-align: center; padding: 12px; background: #eff6ff; border-radius: 8px;">
+          <div style="font-size: 20px; margin-bottom: 4px;">&#128309;</div>
+          <div style="font-weight: bold; font-size: 12px;">Suggestion</div>
+          <div style="font-size: 11px; color: #888; margin-top: 4px;">Could simplify structure</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <div class="mockup">
+    <div class="mockup-header">Full Design Summary — All 4 Issues Addressed</div>
+    <div class="mockup-body" style="padding: 20px; font-size: 13px; line-height: 1.8;">
+      <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+        <span style="color: #27ae60; font-size: 18px;">&#10003;</span>
+        <div><strong>Issue 1: Bulk questions</strong> → Progressive discovery: 7 core Q's one at a time + deep Q's on demand</div>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+        <span style="color: #27ae60; font-size: 18px;">&#10003;</span>
+        <div><strong>Issue 2: Sub-commands</strong> → 7 command files: /design, /design:ux-audit, /design:ui-audit, /design:full-design-audit, /design:figma-autolayout-audit, /design:screen, /design:figma-build</div>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+        <span style="color: #27ae60; font-size: 18px;">&#10003;</span>
+        <div><strong>Issue 3: Figma icons</strong> → New icon_page_name in discovery + 5-step icon lookup process using Figma MCP</div>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 0;">
+        <span style="color: #27ae60; font-size: 18px;">&#10003;</span>
+        <div><strong>Issue 4: Crowded/dated design</strong> → Anti-crowding rules + modern mobile patterns added to skills 01, 02, 03</div>
+      </div>
+    </div>
+  </div>
+</div>
