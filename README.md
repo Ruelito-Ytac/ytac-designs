@@ -25,7 +25,7 @@ Once installed, Claude gains the knowledge of a senior UX/UI consultant. Instead
 **Step 1** — Add the marketplace to Claude Code:
 
 ```
-/plugin marketplace add your-username/ytac-ui-ux-plugins
+/plugin marketplace add Ruelito-Ytac/ytac-ui-ux-plugins
 ```
 
 **Step 2** — Install the plugin:
@@ -41,7 +41,7 @@ That's it. The `/design` command and auto-triggering skill are now available.
 If you just want to install from the repo directly:
 
 ```
-/plugin install your-username/ytac-ui-ux-plugins
+/plugin install Ruelito-Ytac/ytac-ui-ux-plugins
 ```
 
 ### Local Development / Testing
@@ -49,7 +49,7 @@ If you just want to install from the repo directly:
 Clone the repo and load it locally without installing:
 
 ```bash
-git clone https://github.com/your-username/ytac-ui-ux-plugins.git
+git clone https://github.com/Ruelito-Ytac/ytac-ui-ux-plugins.git
 claude --plugin-dir ./ytac-ui-ux-plugins
 ```
 
