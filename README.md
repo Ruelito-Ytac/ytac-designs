@@ -4,8 +4,24 @@ A Claude Code plugin that turns Claude into your UI/UX design partner. Design sc
 
 ## Install
 
+**Step 1** — Verify your GitHub SSH access (run in terminal):
+
+```bash
+ssh -T git@github.com
 ```
-/install-plugin Ruelito-Ytac/ytac-designs
+
+You should see "Hi [username]! You've successfully authenticated..." — if not, [set up SSH keys](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) first.
+
+**Step 2** — Add the marketplace source (run in Claude Code):
+
+```
+/plugin marketplace add Ruelito-Ytac/ytac-designs
+```
+
+**Step 3** — Install the plugin:
+
+```
+/plugin install ruel-system-design-ui-ux-figma@ytac-designs
 ```
 
 ## Usage
