@@ -3,3 +3,5 @@ __MACOSX/
 *.zip
 .Spotlight-V100
 .Trashes
+.claude/
+.superpowers/

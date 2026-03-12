@@ -1,331 +1,65 @@
 # Design System Toolkit — Claude Code Plugin
 
-A Claude Code plugin that turns Claude into a senior UI/UX design consultant. Covers design systems, UX flow auditing, visual QA, Figma auto layout auditing, Figma automation, and design-to-code export. Use `/design` for the main menu, or sub-commands like `/design:ux-audit`, `/design:ui-audit`, `/design:screen` for direct access.
+Turn Claude into a senior UI/UX design consultant with structured audits, Figma automation, and design-to-code export.
 
----
-
-## What This Does
-
-Once installed, Claude gains the knowledge of a senior UX/UI consultant. Instead of giving vague design advice, Claude will:
-
-- **Ask the right questions** before designing anything (6 core questions, one at a time)
-- **Remember your project context** across sessions via `APP_PLAN.md`
-- **Apply industry standards** — Nielsen's heuristics, WCAG accessibility, competitive benchmarks, design tokens
-- **Audit existing designs** with structured frameworks (7-phase UX audit, 11-layer visual audit, 6-phase auto layout audit)
-- **Build and fix Figma files** — auto layout, components, styles, variables, file cleanup
-- **Export designs to code** — React, Vue, HTML/CSS, Tailwind
-- **Generate actionable fix recommendations** with severity ratings, not just "this could be better"
-
----
-
-## Installation
-
-### Step 1 — Add the marketplace
-
-In Claude Code, run:
+## Install
 
 ```
 /plugin marketplace add Ruelito-Ytac/ytac-designs
-```
-
-This registers the `ytac-designs` marketplace so Claude Code can discover the plugin.
-
-### Step 2 — Install the plugin
-
-```
 /plugin install ruel-system-design-ui-ux-figma@ytac-designs
 ```
 
-That's it. The `/design` command and auto-triggering skill are now available.
+## Commands
 
-### Updating
-
-To pull the latest version after an update:
-
-```
-/plugin update ruel-system-design-ui-ux-figma@ytac-designs
-```
-
-### Local Development / Testing
-
-Clone the repo and load it locally without installing:
-
-```bash
-git clone https://github.com/Ruelito-Ytac/ytac-designs.git
-claude --plugin-dir ./ytac-designs
-```
-
-This is useful for testing changes before pushing to GitHub.
-
----
-
-## How to Use It
-
-### Option 1: The `/design` Command
-
-The plugin adds a `/design` slash command. Use it with or without a prompt:
-
-```
-/design
-```
-
-This opens an interactive menu where Claude asks what you'd like to work on.
-
-Or pass your request directly:
-
-```
-/design Start a new mobile app for trading game cards
-/design Audit this checkout flow
-/design Check if these screens look modern
-/design Build the login screen in Figma
-/design Convert this component to React
-/design Fix my Figma file
-```
-
-### Sub-Commands (Direct Access)
-
-Skip the menu and go straight to a specific workflow:
-
-```
-/design:ux-audit                     — Audit a UX flow (7 phases)
-/design:ui-audit                     — Audit UI visuals (11 layers)
-/design:full-design-audit            — Combined UX + UI audit
-/design:figma-autolayout-audit       — Audit Figma auto layout (6 phases)
-/design:screen                       — Design a specific screen
-/design:figma-build                  — Build or fix in Figma
-```
-
-Each sub-command accepts an optional argument:
-
-```
-/design:ux-audit https://figma.com/design/abc123/...
-/design:screen Login screen
-/design:figma-build Create the login screen in Figma
-```
-
-### Option 2: Natural Language (Auto-Trigger)
-
-The skill also auto-triggers when you mention anything design-related. Just talk naturally:
-
-> "I'm starting a new design project"
-
-> "Audit this flow"
-
-> "Is this UI good?"
-
-> "Set up text styles in Figma"
-
-Claude recognizes these phrases and loads the toolkit automatically — no slash command needed.
-
-### Quick Reference
-
-| What you say | What happens |
+| Command | Description |
 |---|---|
-| `/design` (no prompt) | Interactive menu — pick what you want to do |
-| `/design [prompt]` | Routes directly to the right sub-skill |
-| "Start a new design project" | 6-question progressive discovery → creates `APP_PLAN.md` → routes to sub-skill |
-| "Design [screen/feature]" | Design guidance using your project context |
-| "Audit this flow" | 7-phase UX flow audit with severity ratings |
-| "Audit this UI" / "Check these screens" | 11-layer visual inspection |
-| "Full design review" | UX audit + visual audit combined |
-| "Audit auto layout" / "Check layout" | 6-phase Figma auto layout audit |
-| "Build this in Figma" | Constructs screens/components in Figma via MCP |
-| "Convert to code" / "Export to React" | Extracts Figma design → generates production code |
-| "Fix my Figma file" | Auto layout repair, style compliance, cleanup |
-| "Set up text styles" / "Create color variables" | Initializes design system tokens in Figma |
-| "Show project context" | Displays current `APP_PLAN.md` |
-| "Update project context" | Re-runs specific discovery questions |
+| `/design` | Main menu — routes to the right workflow |
+| `/design:screen` | Design a specific screen |
+| `/design:ux-audit` | 7-phase UX flow audit |
+| `/design:ui-audit` | 11-layer visual audit |
+| `/design:full-design-audit` | Combined UX + UI audit |
+| `/design:figma-autolayout-audit` | 6-phase auto layout audit |
+| `/design:figma-build` | Build or fix designs in Figma |
+| `/design:figma-export` | Export Figma designs to code |
 
----
+All commands accept an optional argument: `/design:screen Login screen`
 
-## What Happens When You Start a New Project
+## What's Inside
 
-When you say "start a new design project" (or use `/design` to start one), Claude runs a structured discovery:
+**Core skills:**
 
-1. **6 core questions asked one at a time** — project name, platform, audience, brand colors, navigation, priority screens
-2. **Deep questions asked on-demand** — only when the current task needs them (e.g., icon page name when building in Figma, fonts when designing text-heavy screens)
-3. **Generates `APP_PLAN.md`** — a living document with your project context in YAML
-4. **Derives 3-5 design principles** from your answers (e.g. "Clarity over cleverness", "Mobile-first always")
-5. **Routes to the right sub-skill** based on what you want to do first
+| Skill | Purpose |
+|---|---|
+| `01-mobile-web-ui-ux-design-guide` | Design reference — typography, color, layout, accessibility, platform conventions |
+| `02-ux-flow-audit` | 7-phase UX validation with Nielsen's heuristics and severity ratings |
+| `03-ui-visual-audit` | 11-layer visual inspection — spacing, color, components, responsive, dark mode |
+| `05-figma-autolayout-audit` | 6-phase auto layout inspection — direction, sizing, spacing, nesting |
 
-Claude never asks more than one question per message, and skips anything it already knows.
+**Modular Figma skills** (load only what you need):
 
----
+| Module | Purpose |
+|---|---|
+| `04a-figma-build-core` | Lean build skill — screens, auto layout, batch-first patterns |
+| `04b-component-architect` | Smart component creation — variants, properties, collaborative personality |
+| `04c-code-export` | Design-to-code — React, Vue, HTML/CSS, Tailwind |
+| `04d-figma-repair` | Detection scripts, bulk fixes, file audit |
+| `04e-figma-tools-ref` | MCP tool reference (loaded on demand) |
 
-## The APP_PLAN.md — Your Project's Memory
+**Supporting modules:** discovery (6-question project onboarding), router (intent classification), governance (design system lifecycle & versioning).
 
-This is the file that makes the toolkit useful across sessions. Claude creates it during discovery and updates it as you work. It tracks:
+## Quick Start
 
-- **Project Context** — YAML block with platform, colors, fonts, spacing density, etc.
-- **Design Principles** — 3-5 values that guide trade-off decisions
-- **Current Focus** — What's actively being worked on, blockers
-- **Decision Log** — What was decided, why, and when (prevents re-debating)
-- **Completed Work** — Screens designed, flows audited, components created
-- **Outstanding Issues** — Open problems from audits, prioritized by severity
-- **Design System Inventory** — Token collections and component library status
-- **Changelog** — Design system changes over time (semantic versioning)
+1. **Install** the plugin (see above)
+2. **Run `/design`** — Claude asks what you want to work on and routes you
+3. **Pick a workflow** — design a screen, audit a flow, build in Figma, or export to code
 
-You can also edit `APP_PLAN.md` directly — it's just Markdown with a YAML block.
-
-### Multiple Projects
-
-Each project gets its own APP_PLAN file:
-
-```
-APP_PLAN.md              <- Default / primary project
-APP_PLAN_ADMIN.md        <- Admin dashboard project
-APP_PLAN_MARKETING.md    <- Marketing site project
-```
-
-Say "switch to [project name]" to load a different context.
-
----
-
-## Repository Structure
-
-```
-ytac-designs/
-|
-|-- .claude-plugin/
-|   |-- marketplace.json                 <- Marketplace catalog
-|   +-- plugin.json                      <- Plugin metadata
-|
-|-- commands/
-|   |-- design.md                        <- /design slash command (main menu)
-|   |-- design:ux-audit.md              <- /design:ux-audit sub-command
-|   |-- design:ui-audit.md              <- /design:ui-audit sub-command
-|   |-- design:full-design-audit.md     <- /design:full-design-audit sub-command
-|   |-- design:figma-autolayout-audit.md <- /design:figma-autolayout-audit sub-command
-|   |-- design:screen.md                <- /design:screen sub-command
-|   +-- design:figma-build.md           <- /design:figma-build sub-command
-|
-|-- skills/
-|   +-- design-system-toolkit/
-|       |-- SKILL.md                     <- Entry point (read this first)
-|       |-- discovery.md                 <- Progressive project discovery (6 core Q's)
-|       |-- router.md                    <- Intent classification & menu routing
-|       |-- governance.md                <- Design system init, lifecycle, versioning
-|       |-- project/
-|       |   +-- APP_PLAN.md              <- Session state template
-|       +-- skills/
-|           |-- 01-mobile-web-ui-ux-design-guide.md
-|           |-- 02-ux-flow-audit.md
-|           |-- 03-ui-visual-audit.md
-|           |-- 04-figma-to-code.md
-|           +-- 05-figma-autolayout-audit.md
-|
-|-- .gitignore
-+-- README.md                            <- You are here
-```
-
-### What Each File Does
-
-| File | Role |
-|------|------|
-| `.claude-plugin/marketplace.json` | Marketplace catalog — lists available plugins for install |
-| `.claude-plugin/plugin.json` | Plugin identity — name, version, description |
-| `commands/design.md` | The `/design` slash command definition |
-| `skills/design-system-toolkit/SKILL.md` | Entry point — routes to the correct sub-skill |
-| `skills/design-system-toolkit/discovery.md` | Progressive project discovery — 6 core questions, one at a time |
-| `skills/design-system-toolkit/router.md` | Intent classification & menu routing (base `/design` only) |
-| `skills/design-system-toolkit/governance.md` | Design system initialization, lifecycle, versioning |
-| `skills/design-system-toolkit/project/APP_PLAN.md` | Template for project session state |
-| `skills/design-system-toolkit/skills/01-...` | Design reference — 18 sections (typography, color, layout, navigation, forms, accessibility, etc.) |
-| `skills/design-system-toolkit/skills/02-...` | 7-phase UX flow audit — structure, screen quality, mobile usability, interactions, edge cases |
-| `skills/design-system-toolkit/skills/03-...` | 11-layer visual audit — spacing, typography, color, components, icons, surfaces, responsive |
-| `skills/design-system-toolkit/skills/04-...` | Figma production & code export — auto layout, components, styles/variables, design-to-code |
-| `skills/design-system-toolkit/skills/05-...` | Figma auto layout audit — 6-phase inspection (direction, sizing, spacing, alignment, nesting, positioning) |
-
----
-
-## What's Inside Each Sub-Skill
-
-### 01 — Design Guide
-
-18 sections covering production-quality interface design: UX thinking, user flows, mobile-first, layout, navigation, touch & interaction, typography, color & theming, forms, feedback & states, edge states, accessibility, platform conventions (iOS HIG / Material 3), design review, Figma workflow, design-to-dev handoff, content & UX writing, and performance budgets.
-
-### 02 — UX Flow Audit
-
-7-phase validation framework: flow structure, screen-by-screen review, mobile usability, interaction & feedback, edge cases, accessibility, and cognitive load. Includes Nielsen's heuristics mapping (H1-H10), severity system, fix framework with effort estimates, competitive benchmarks, and user research integration.
-
-### 03 — Visual Audit
-
-11-layer inspection: spacing & alignment, typography, color & contrast, component consistency, icons & imagery, elevation/borders/surfaces, responsive behavior, modern design patterns, dark mode integrity, motion & transitions, and design system compliance. Includes defect catalogs with before/after examples.
-
-### 04 — Figma Production & Code Export
-
-Figma mastery: auto layout, component construction, variant & property architecture, style & variable setup, file repair & cleanup. Plus design-to-code translation for React, React + Tailwind, Vue 3, and HTML/CSS. Includes Figma MCP tool reference (35+ tools documented).
-
----
-
-## Governance (Built In)
-
-The toolkit includes design system governance in `governance.md`:
-
-- **Ownership model** — System Owner, Contributors, Consumers, Reviewers
-- **Contribution workflow** — Identify -> Propose -> Review -> Integrate
-- **Component lifecycle** — Proposed -> Draft -> Beta -> Stable -> Deprecated
-- **Deprecation process** — 5-step process with 30-day minimum notice
-- **Audit schedule** — Weekly, monthly, quarterly, annual review cadence
-- **Semantic versioning** — MAJOR.MINOR.PATCH adapted for design systems
-- **Changelog & migration templates** — For tracking changes and breaking updates
-
----
+The plugin also auto-triggers on design-related prompts. Just say "audit this flow" or "build the login screen in Figma" and Claude loads the right skill.
 
 ## Requirements
 
-- **Claude Code** v1.0.33 or later (plugin support)
-- **Figma MCP** (optional) — needed for direct Figma building/repair via `04-figma-to-code`
-
----
-
-## Uninstalling
-
-To disable the plugin without removing it:
-
-```
-/plugin disable ruel-system-design-ui-ux-figma@ytac-designs
-```
-
-To fully remove:
-
-```
-/plugin uninstall ruel-system-design-ui-ux-figma@ytac-designs
-```
-
-To remove the marketplace entirely:
-
-```
-/plugin marketplace remove ytac-designs
-```
-
----
-
-## Stats
-
-| Metric | Value |
-|---|---|
-| Total lines | ~5,950 |
-| Core discovery questions | 6 (+ deep questions on-demand) |
-| Sub-commands | 6 (ux-audit, ui-audit, full-design-audit, figma-autolayout-audit, screen, figma-build) |
-| Design guide sections | 26 |
-| UX audit phases | 7 |
-| Visual audit layers | 11 |
-| Auto layout audit phases | 6 |
-| Figma-to-code sections | 14 |
-| Nielsen's heuristics mapped | All 10 |
-| Industry benchmarks | 6 categories |
-| Supported frameworks | React, Vue, HTML/CSS, Tailwind |
-| Figma MCP tools documented | 35+ |
-
----
+- **Claude Code** with plugin support
+- **Figma MCP** — required for `/design:figma-build`, `/design:figma-export`, and `/design:figma-autolayout-audit`
 
 ## Author
 
 **Ruelito Ytac**
-
----
-
-## License
-
-See [LICENSE](LICENSE) for details.

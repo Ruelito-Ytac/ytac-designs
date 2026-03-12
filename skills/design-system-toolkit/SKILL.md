@@ -42,7 +42,11 @@ design-system-toolkit/
     ├── 01-mobile-web-ui-ux-design-guide.md   ← Design principles & patterns
     ├── 02-ux-flow-audit.md                   ← UX flow validation (7 phases)
     ├── 03-ui-visual-audit.md                 ← UI visual inspection (11 layers)
-    ├── 04-figma-to-code.md                   ← Figma production & code export
+    ├── 04a-figma-build-core.md               ← Figma build: screens & auto layout
+    ├── 04b-component-architect.md            ← Smart component creation & variants
+    ├── 04c-code-export.md                    ← Design-to-code translation
+    ├── 04d-figma-repair.md                   ← File repair & cleanup scripts
+    ├── 04e-figma-tools-ref.md                ← MCP tool reference (on demand)
     └── 05-figma-autolayout-audit.md          ← Figma auto layout audit (6 phases)
 ```
 
@@ -56,10 +60,11 @@ design-system-toolkit/
 | "Audit this UI" / "Check these screens" | Load `project/APP_PLAN.md` (if exists) → Load `skills/03` |
 | "Full design review" | Load `project/APP_PLAN.md` (if exists) → Load `skills/02` then `skills/03` |
 | "Audit auto layout" / "Check layout" | Load `project/APP_PLAN.md` (if exists) → Load `skills/05` |
-| "Build this in Figma" | Load `project/APP_PLAN.md` → Load `skills/04` (Build Mode) |
-| "Convert to code" / "Export to React" | Load `project/APP_PLAN.md` → Load `skills/04` (Export Mode) |
-| "Fix my Figma file" / "Add auto layout" | Load `project/APP_PLAN.md` → Load `skills/04` |
-| "Set up styles" / "Create variables" | `governance.md` → Load `skills/04` for execution |
+| "Build this in Figma" | Load `project/APP_PLAN.md` → Load `skills/04a` |
+| "Create a component" / "Add variants" | Load `project/APP_PLAN.md` → Load `skills/04b` |
+| "Convert to code" / "Export to React" | Load `project/APP_PLAN.md` → Load `skills/04c` |
+| "Fix my Figma file" / "Clean up" | Load `project/APP_PLAN.md` → Load `skills/04d` |
+| "Set up styles" / "Create variables" | `governance.md` → Load `skills/04a` for execution |
 | "Show project context" | Read `project/APP_PLAN.md` and display |
 | "Update project context" | `discovery.md` → Re-run specific questions → Update `project/APP_PLAN.md` |
 | "Switch to [project name]" | Load that project's APP_PLAN from `project/` |

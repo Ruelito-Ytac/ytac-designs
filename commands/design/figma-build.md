@@ -19,7 +19,8 @@ You have been invoked via the `/design:figma-build` command.
 1. **Load project context** (required): Read `skills/design-system-toolkit/project/APP_PLAN.md` from this plugin directory.
    - If APP_PLAN.md does NOT exist, run discovery first: read `skills/design-system-toolkit/discovery.md` and ask the 6 core questions one at a time. Generate APP_PLAN.md before proceeding.
 2. **Check design system**: Verify text styles + color styles exist in Figma. If not, read `skills/design-system-toolkit/governance.md` and run the design system initialization first.
-3. **Load the build skill**: Read `skills/design-system-toolkit/skills/04-figma-to-code.md` (Build Mode) from this plugin directory.
+3. **Load the build skill**: Read `skills/design-system-toolkit/skills/04a-figma-build-core.md` from this plugin directory.
+   - If the task involves creating reusable components with variants/properties, also load `skills/design-system-toolkit/skills/04b-component-architect.md`.
 4. **If the user specified what to build** via `$ARGUMENTS`, start building immediately.
 5. **If no arguments were provided**, ask the user what they want to build or fix in Figma.
 6. **After completing a build session**, recommend: "Run `/design:figma-autolayout-audit` to validate the auto layout structure."
