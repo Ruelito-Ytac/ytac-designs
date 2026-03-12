@@ -1,5 +1,5 @@
 {
   "name": "ruel-system-design-ui-ux-figma",
   "description": "Turns Claude into a senior UI/UX design consultant — covering design systems, UX flow auditing, visual QA, Figma auto layout auditing, Figma automation, and design-to-code export. Use /design for the main menu, or sub-commands like /design:ux-audit, /design:ui-audit, /design:screen for direct access.",
-  "version": "2.0.0"
+  "version": "2.0.1"
 }
