@@ -23,16 +23,17 @@ description: >
 Every Figma file built or touched by this skill MUST follow these rules. No exceptions.
 
 1. **100% Auto Layout** — Every frame from screen level to deepest child uses auto layout. Zero manual positioning.
-2. **Zero Raw Values** — Every text layer references a Text Style. Every color fill references a Color Style or Variable. Every spacing value comes from the spacing scale.
+2. **Reuse First, Zero Raw Values** — Before building anything, query the file's existing text styles (`figma_get_styles`), color variables (`figma_get_variables`), and components (`figma_search_components`). Use what already exists. Every text layer references an existing Text Style. Every color fill references an existing Color Style or Variable. Every spacing value comes from the spacing scale. Only create new styles, variables, or components when nothing suitable exists — and when you do, follow the existing naming conventions.
 3. **Component Everything** — If an element appears more than once, it's a component. If it has states, it's a variant set.
 4. **Name Everything** — No "Frame 427", no "Rectangle 12". Every layer has a semantic name.
 5. **Nest Intentionally** — Maximum 6 levels of nesting. Deeper = extract to component.
-6. **No Spacer Frames** — Never use empty frames (`_sp`, `Spacer`, etc.) between siblings for spacing. Always use auto layout `gap` (`itemSpacing`) on the parent. If children need different gaps, group related items into sub-frames.
+6. **No Spacer Frames** — Never use empty frames (`_sp`, `Spacer`, etc.) between siblings for spacing. Always use auto layout `gap` (`itemSpacing`) on the parent. If children need different gaps, group related items into sub-frames with their own gap value — and ensure the sub-frame's inner gap is smaller than the parent's outer gap (proximity clustering).
 7. **No Placeholder Heights** — Every element's height must match its content (HUG). Only screen frames, images, icons, avatars, and dividers get fixed heights. An input field at 100px with 48px of content is a bug.
 8. **Equal Width × Height on Circular/Square Elements** — Any frame intended to be circular or square MUST have `width = height`. Use `FIXED` on BOTH axes. Never `HUG`. This applies to ALL such elements: avatars, icon containers, dots, badges, input cells meant to be square, stat containers, any frame with `cornerRadius ≥ 9999`. A 40×19 "circle" is a bug. See build pattern below.
 9. **No Truncated Labels** — Every text label must be fully visible. Use `fill width` on text inside auto layout. If a label shows "Date Of Bi..." instead of "Date of Birth", the text sizing is broken. Labels must never clip.
 10. **Multi-Step Flows Need Progress Indicators** — Any flow with 2+ sequential screens (carousels, wizards, onboarding) MUST show the user's position (pagination dots, step bar, progress indicator). Missing indicators = the user is lost.
 11. **Consistent Navigation Across a Flow** — Back buttons, headers, and navigation elements must use the same pattern on every screen within a flow. If screen A uses "← Back" text, screen B cannot use just "←". Pick one pattern and apply it everywhere.
+12. **80px Between Screen Frames** — When building multiple screens (user flows, multi-step flows), every new screen frame must be placed 80px to the right of the previous screen. Never stack screens on top of each other. Before creating a new screen, find the rightmost existing screen on the page and offset the new frame by `previous.x + previous.width + 80`.
 
 ### Pre-Flight Check
 
@@ -74,16 +75,21 @@ Missing any of these? → Run governance.md Step 3 first.
 | Read styles | `figma_get_styles` | `Figma:get_variable_defs` |
 | Check design parity | `figma_check_design_parity` | Manual comparison |
 
-### Icon Page Integration
+### Icon Page Integration (HARD GATE)
 
-**⚠️ Before building any screen with icons, `icon_page_name` MUST be set in APP_PLAN.md. If it's not set, STOP and ask the user before proceeding.**
+**🛑 This is a HARD GATE. You CANNOT build any screen until icons are discovered and mapped. No exceptions.**
+
+**Before the first screen in any session:**
 
 1. Read `icon_page_name` from `project/APP_PLAN.md`
 2. **If NOT set → STOP. Ask the user:** "Which Figma page contains your project's icons? (e.g., 'UI Icons', 'Assets/Icons')" — Store in APP_PLAN.md, then continue.
-3. Use `get_design_context` to fetch available icons from that page
-4. Match needed icons to available icons by name/purpose
-5. Use the project's actual icon components — never substitute generic/emoji icons
-6. If a specific icon doesn't exist on the page, flag it as missing and suggest adding it
+3. **Fetch the full icon inventory** — Run the "List All Available Icons" script from §22 in `01-ref-design-patterns.md` via `figma_execute`. Store the results (icon names + IDs).
+4. **For each screen:** Before building, list every icon the screen needs. Match each to the icon inventory. Present the mapping to the user and wait for confirmation.
+5. **Use ONLY `figma_instantiate_component`** with the icon component IDs from the inventory. Never create shapes, text characters, or emoji as icon substitutes.
+6. If an icon doesn't exist on the page → tell the user. Ask: "Should I create this icon on the icon page, or use an alternative?" Do NOT silently skip it or substitute.
+7. **For subsequent screens in the same flow:** Reuse the stored icon inventory (no re-fetch needed). Still present the icon mapping for each new screen so the user can confirm.
+
+**Why this is a hard gate:** Without it, screens get built with fake icons (emoji, text characters, raw shapes) that don't update with the design system and look broken in Dev Mode handoff.
 
 ### Building Circular / Square Elements (Golden Rule 8)
 
@@ -154,12 +160,47 @@ node.paddingRight = 16;
 When building a new screen from scratch, use this exact sequence:
 
 ```
-STEP 1: Create Screen Frame
+STEP 0: Query Existing Assets
+  → figma_get_styles (load all text styles + effect styles)
+  → figma_get_variables (load all color + spacing variables)
+  → figma_search_components (load available components)
+  → Fetch icon inventory from the icon page (see Icon Discovery below)
+  → Store ALL of these in memory — reference them in every subsequent step
+  → NEVER create a new style/variable/component if a matching one already exists
+
+STEP 0.5: Icon Discovery & Mapping (HARD GATE — do NOT skip)
+  → Read icon_page_name from project/APP_PLAN.md
+  → If NOT set → STOP. Ask the user: "Which Figma page has your icons?"
+     Store in APP_PLAN.md before continuing.
+  → figma_execute: List ALL icon components on the icon page (see §22 script)
+  → Analyze the screen being built — list every icon it will need
+  → Present the mapping to the user:
+     "This screen needs these icons:
+      - Back arrow → Icon / Chevron Left (found ✓)
+      - Search → Icon / Search (found ✓)
+      - Settings → ⚠️ Not found on icon page
+      Should I proceed with the found icons? What about Settings?"
+  → Wait for user confirmation before proceeding
+  → Store the confirmed icon mapping — use ONLY these icons when building
+  → For subsequent screens in the same flow, reuse the stored icon inventory
+     (no need to re-fetch, but still present the mapping for each new screen)
+
+STEP 1: Create Screen Frame (with canvas positioning)
   → figma_create_child: FRAME, name "Screen / [Name]"
   → figma_execute: Set layoutMode = "VERTICAL", width = 393 (mobile), height = 852
   → figma_execute: Set primaryAxisSizingMode = "FIXED" (fixed height)
   → figma_execute: Set counterAxisSizingMode = "FIXED" (fixed width)
   → figma_execute: Set clipsContent = true
+  → figma_execute: Position the frame 80px to the right of the last screen:
+     const page = figma.currentPage;
+     const screens = page.children.filter(n => n.type === "FRAME" && n.width >= 300);
+     if (screens.length > 1) {
+       const prev = screens[screens.length - 2]; // previous screen
+       const newScreen = screens[screens.length - 1]; // just created
+       newScreen.x = prev.x + prev.width + 80;
+       newScreen.y = prev.y; // same vertical position
+     }
+  → NEVER place a screen at (0,0) if other screens already exist on the page
 
 STEP 2: Create Header
   → figma_create_child: FRAME inside screen, name "Header"

@@ -208,6 +208,7 @@ Flow Page Layout (left to right, top to bottom):
 4. Include a **legend** in each section explaining the color codes
 5. Screens in the flow are either: (a) full-size design frames, or (b) scaled-down thumbnails with a link to the full screen on the Screens page
 6. Maximum **one level of branching** visible per diagram. If a branch is complex, extract it as a sub-flow section
+7. **80px horizontal gap between screen frames** — every screen in a flow must be exactly 80px apart. New screens are placed to the right of the previous one, at the same Y position. Never stack screens on top of each other or overlap them.
 
 #### Flow Numbering Convention
 
@@ -291,6 +292,7 @@ Before a flow is considered complete, verify every item:
 - ❌ **Giant monolith flow** — one diagram with 30+ screens. Break into sub-flows of 5–8 screens each.
 - ❌ **Dead-end error states** — error screens with no recovery path. Every error must show how to get back.
 - ❌ **No numbering** — screen names like "Frame 47" or "Untitled". Use the flow numbering convention.
+- ❌ **Overlapping screens** — new screens placed at (0,0) on top of existing ones. Every screen must be 80px to the right of the previous screen, at the same Y position.
 
 ---
 
@@ -619,8 +621,7 @@ Cards are the most versatile UI pattern. Good card design:
 ### Whitespace
 Whitespace is not wasted space — it's a design tool:
 - More whitespace = more elegance and focus
-- Group related items by reducing space between them
-- Separate unrelated items by increasing space between them
+- **Proximity clustering:** Related elements get a tighter gap; unrelated elements get the next step up on the spacing scale. This creates visual groups without borders or dividers. Example: items inside a form section use 16px gap → the gap between form sections is 24px. The inner gap must always be smaller than the outer gap.
 - Generous whitespace around CTAs makes them more noticeable
 - Cramped layouts feel stressful; spacious layouts feel premium
 
@@ -847,6 +848,8 @@ Use a consistent type scale across your entire design:
 | Overline | 11–12px | Category labels, section markers (usually uppercase + tracked out) |
 
 Define each as a **Figma Text Style** with font family, size, weight, line height, and letter spacing baked in.
+
+**Reuse first:** Always query existing text styles (`figma_get_styles`), color variables (`figma_get_variables`), and components (`figma_search_components`) before creating new ones. If a matching asset already exists, use it — never create duplicates. Only create new styles or variables when nothing suitable exists, and follow the existing naming conventions.
 
 ### Typography Rules
 

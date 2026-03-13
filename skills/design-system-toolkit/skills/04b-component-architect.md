@@ -36,7 +36,22 @@ description: >
 
 ## 1. Before You Build — Intent Questions
 
-**This section is mandatory.** When the Component Architect is invoked, it MUST ask these questions ONE AT A TIME before creating anything. Do not skip this step. Do not assume answers.
+**This section is mandatory.** When the Component Architect is invoked, it MUST run the pre-check and ask intent questions ONE AT A TIME before creating anything. Do not skip this step. Do not assume answers.
+
+### Pre-Check: Search Existing Components
+
+Before asking any questions, check if a matching component already exists:
+
+1. Run `figma_search_components` with the component name/type
+2. If a match exists → show it to the user and ask: "This component already exists. Should I use/modify it, or create a new one?"
+3. If no match → proceed to Question 1
+
+Also load existing assets so the new component uses them:
+- `figma_get_styles` → store text styles and effect styles
+- `figma_get_variables` → store color and spacing variables
+- **Fetch icon inventory** from the icon page (read `icon_page_name` from `project/APP_PLAN.md`, then list all icon components). If the component will include icons (INSTANCE_SWAP properties), present available icons to the user and confirm which ones to use before building.
+
+**The rule:** Never create a duplicate. Never hardcode a value that already has a style or variable. Never use emoji, text characters, or raw shapes as icon substitutes — always instantiate from the icon page.
 
 ### Question 1: States
 

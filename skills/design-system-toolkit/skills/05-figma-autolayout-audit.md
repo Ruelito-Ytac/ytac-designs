@@ -109,9 +109,10 @@ All values should follow the 8px grid: 2, 4, 8, 12, 16, 20, 24, 32, 40, 48, 64.
 | 3.4 | Do inputs have ≥12px horizontal padding? | 🟠 Major | | |
 | 3.5 | Does the screen have ≥16px left/right padding? | 🔴 Critical | | Content touching device edge |
 | 3.6 | Are gaps between sibling elements consistent? | 🟡 Minor | | |
-| 3.7 | Are gaps between major sections ≥24px? | 🟠 Major | | Sections need breathing room |
-| 3.8 | Is the same padding used for all instances of the same component type? | 🟠 Major | | Button A padding ≠ Button B padding |
-| 3.9 | Are bottom sheets using extra bottom padding for device safe area? | 🟠 Major | | Content hidden behind home indicator |
+| 3.7 | Is the inner gap of grouped items smaller than the outer gap between groups? (Proximity clustering: inner < outer) | 🟠 Major | | Groups merge visually if inner = outer |
+| 3.8 | Are gaps between major sections ≥24px? | 🟠 Major | | Sections need breathing room |
+| 3.9 | Is the same padding used for all instances of the same component type? | 🟠 Major | | Button A padding ≠ Button B padding |
+| 3.10 | Are bottom sheets using extra bottom padding for device safe area? | 🟠 Major | | Content hidden behind home indicator |
 
 ---
 

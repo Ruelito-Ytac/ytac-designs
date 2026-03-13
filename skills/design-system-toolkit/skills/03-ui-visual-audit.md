@@ -88,6 +88,8 @@ The fastest way to spot an unpolished design is inconsistent spacing. This layer
 | 1.6 | Is spacing proportional to hierarchy? (More space between major sections, less within groups) | | |
 | 1.7 | Is there at least 16px spacing between distinct content sections? (🔴 Critical if less — sections must breathe) | | |
 | 1.8 | Does any content touch the device edges with 0px screen padding? (🔴 Critical — minimum 16px on all sides) | | |
+| 1.9 | Is the gap between items within a group smaller than the gap between groups? (Inner < Outer — e.g., 16px within, 24px+ between) (🟠 Major if equal or inverted — groups visually merge) | | |
+| 1.10 | Can you tell which label belongs to which input by spacing alone? (Label should be closer to its own input than to the previous field) | | |
 
 ### Internal Padding Checks (🔴 Zero-Padding = Critical)
 
@@ -609,6 +611,8 @@ If the app has dark mode, audit it separately — it has its own failure modes.
 | 11.11 | Are there unused styles or variables? (Bloat in the system) | | |
 | 11.12 | Are variables organized in collections? (Primitives, Semantic, Component-level) | | |
 | 11.13 | Do Light and Dark modes both exist in the variable structure? | | |
+| 11.14 | Are there duplicate styles? (e.g., "Body" and "Typography / Body" doing the same thing) | | |
+| 11.15 | Are there elements with raw values where a matching style/variable already exists in the file? (🔴 Critical — use the existing asset) | | |
 
 ### How to Check in Figma
 - **Selection Colors panel**: Select all elements → check if colors are linked to styles/variables

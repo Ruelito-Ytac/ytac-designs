@@ -269,6 +269,7 @@ SIZING:
 FLOW CONSISTENCY:
 - [ ] **Multi-step flows have progress indicators** — any flow with 2+ sequential screens must show position (dots, step bar, progress)
 - [ ] **Navigation is consistent across the flow** — back buttons, headers, and nav elements use the same pattern on every screen (don't mix "← Back" text with bare "←" arrows)
+- [ ] **Screen frames are 80px apart** — every screen in a flow is positioned 80px to the right of the previous one, at the same Y coordinate. No overlapping or stacking on top of each other
 
 SPACING:
 - [ ] All gaps use spacing tokens (4/8/12/16/24/32) — no arbitrary values
@@ -348,6 +349,8 @@ Once initialized, the design tokens in Figma should include:
 - Color fill → must reference a Color Style or Color Variable
 - Spacing/padding → should use spacing variables (or at minimum, 8px grid values)
 - Border radius → should reference a radius variable
+
+**Reuse first:** Before creating any new style or variable, query what already exists in the file using `figma_get_styles` and `figma_get_variables`. If a matching style or variable exists, use it — do not create a duplicate. Only create new tokens when nothing suitable exists, and follow the existing naming conventions when you do.
 
 ### Prototyping
 - Connect screens with interaction flows
@@ -1028,7 +1031,9 @@ Card Frame (auto layout, vertical, gap: 0)
 
 ---
 
-## 22. Icon Source — The Project Icons Page
+## 22. Icon Source — The Project Icons Page (HARD GATE)
+
+**🛑 HARD GATE: Before building ANY screen, you MUST fetch the full icon inventory from the icon page and present icon mappings to the user. No screen can be built with unconfirmed icons. See `04a-figma-build-core.md` Step 0.5 for the workflow.**
 
 When building screens in Figma, **always pull icons from the project's designated icon page** in the same Figma file. This is the single source of truth for all icons used in the project.
 
@@ -1591,6 +1596,37 @@ Within auto layout containers, the `gap` (itemSpacing) should follow these patte
 | Chip group (horizontal) | 8px | `spacing-sm` |
 | Chip group (wrap) | 8px horizontal, 8px vertical | `spacing-sm` both |
 
+### Proximity Clustering (Inner < Outer Rule)
+
+Related elements must be closer together than unrelated elements. This creates visual groups through spacing alone — no dividers or borders needed.
+
+**The rule:** The gap between items inside a group must be at least one spacing token step smaller than the gap separating that group from its neighbors.
+
+| Level | What it spaces | Example gap | Token range |
+|-------|---------------|-------------|-------------|
+| Tight | Atomic pairs (icon ↔ label, label ↔ input) | 4–8px | `spacing-xs` to `spacing-sm` |
+| Normal | Siblings in a group (fields in a form section, items in a list) | 12–16px | `spacing-md` to `spacing-content` |
+| Loose | Between groups or sections | 24–32px | `spacing-xl` to `spacing-2xl` |
+| Distant | Major page regions | 48–64px | `spacing-3xl` to `spacing-4xl` |
+
+Each level must use a smaller value than the level below it. If siblings inside a card use 16px gap, the gap between cards must be ≥24px.
+
+**Concrete example — Form screen:**
+```
+Form Screen
+├── Section: "Personal Info" (gap between sections = 32px)  ← LOOSE
+│   ├── Label + Input pair (label-to-input = 4px)           ← TIGHT
+│   ├── gap between fields = 16px                           ← NORMAL
+│   └── Label + Input pair
+├── Section: "Address" (gap between sections = 32px)         ← LOOSE
+│   ├── Label + Input pair
+│   ├── gap between fields = 16px                           ← NORMAL
+│   └── Label + Input pair
+└── Submit Button (gap from last section = 32px)             ← LOOSE
+```
+
+**Why it matters:** If a label is equidistant from its own input and the previous field's input, the user can't tell which field the label belongs to. Proximity removes ambiguity.
+
 ### Spacing Consistency Rules
 
 These are non-negotiable consistency requirements:
@@ -1601,6 +1637,7 @@ These are non-negotiable consistency requirements:
 4. **Nested padding doesn't double up.** A card with 16px padding inside a screen with 16px margin = 32px visual distance from edge. This is correct and intentional — don't add more padding to "fix" it.
 5. **Symmetry by default.** Left padding = right padding. Top padding = bottom padding (unless semantically different, like a bottom sheet with more bottom padding for the home indicator).
 6. **Off-grid values are bugs.** Any spacing value not on the 8px grid (or 4px for fine adjustments) needs justification. 13px, 17px, 22px — snap to the nearest token.
+7. **Inner gap < Outer gap — always.** The spacing between items inside a group must be smaller than the spacing between groups. If items in a card use 12px gap, the gap between cards must be at least one token step larger (e.g., 16px or 24px). If they're equal, the groups visually merge and clustering breaks.
 
 ### Spacing Detection Script
 
@@ -1706,6 +1743,7 @@ return {
 - ❌ **Gap + padding mismatch** — Section gap is 32px but items within sections also have 16px bottom margin, creating 48px visual gap between sections.
 - ❌ **HUG on content area** — The scrollable content area between header and footer is HUG instead of FILL. Footer floats up when content is short.
 - ❌ **FILL on a button** — Button stretches to full height of its parent instead of sizing to its content. Button should be HUG height.
+- ❌ **Equal inner/outer spacing** — Items inside a card use 16px gap, and the cards themselves are also 16px apart. Groups visually merge into one undifferentiated list. Make the outer gap at least one token step larger (e.g., 24px).
 
 ---
 
